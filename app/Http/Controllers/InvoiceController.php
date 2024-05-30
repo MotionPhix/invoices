@@ -74,6 +74,8 @@ class InvoiceController extends Controller
   {
     $validated = $request->validate([
       'invoice_date' => 'required|date',
+      'currency' => 'nullable|string|in:' . implode(',', \App\Models\Settings::CURRENCIES),
+      'status' => 'string|in:' . implode(',',array_column(\App\Models\YourModel::STATUSES, 'value')),
       'description' => 'nullable|string',
       'items' => 'required|array',
       'items.*.description' => 'required|string',

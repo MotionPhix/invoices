@@ -9,7 +9,7 @@ class Settings extends Model
 {
   use HasFactory;
 
-  const CURRENCIES = ['MWK','ZMW','ZAR','GBP'];
+  const CURRENCIES = ['MWK','ZMW','ZAR','GBP', 'USD'];
 
   protected $fillable = [
     'invoice_prefix',

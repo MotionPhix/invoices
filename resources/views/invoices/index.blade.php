@@ -38,9 +38,7 @@
                         :href="route('invoices.create')"
                         preserve-scroll>
                         <x-tabler-plus
-                          class="flex-shrink-0 size-4"
-                          width="24" height="24"
-                          stroke-width="2" />
+                          class="flex-shrink-0 size-5" />
                         Create
                       </x-splade-link>
                     </div>
@@ -162,7 +160,7 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="text-sm text-gray-600 dark:text-neutral-400">
-                              {{ \Illuminate\Support\Number::currency($invoice->vat_amount, in: $invoice->currency ?? \App\Models\Settings::where('id', 1)->first()->currency) }}
+                              {{ \Illuminate\Support\Number::currency($invoice->vat_amount, in: $invoice->currency ?? \App\Models\Settings::first()->currency) }}
                             </span>
                           </span>
                         </button>
@@ -173,7 +171,7 @@
                           <span class="block px-6 py-2">
                             <span class="text-sm text-gray-600 dark:text-neutral-400">
 
-                              {{ \Illuminate\Support\Number::currency($invoice->total_amount, in: $invoice->currency ?? \App\Models\Settings::where('id', 1)->first()->currency) }}
+                              {{ \Illuminate\Support\Number::currency($invoice->total_amount, in: $invoice->currency ?? \App\Models\Settings::first()->currency) }}
 
                             </span>
                           </span>

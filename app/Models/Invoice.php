@@ -15,6 +15,13 @@ class Invoice extends Model
   const STATUS_PARTIAL = 'partial';
   const STATUS_CANCELED = 'canceled';
 
+  const STATUSES = [
+    ['label' => 'Draft', 'value' => self::STATUS_DRAFT],
+    ['label' => 'Paid', 'value' => self::STATUS_PAID],
+    ['label' => 'Partial', 'value' => self::STATUS_PARTIAL],
+    ['label' => 'Canceled', 'value' => self::STATUS_CANCELED],
+  ];
+
   protected $fillable = [
     'user_id',
     'invoice_number',

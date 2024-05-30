@@ -4,6 +4,8 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 
 /* @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "off",
+
   content: [
     "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
     "./vendor/protonemedia/laravel-splade/lib/**/*.vue",
