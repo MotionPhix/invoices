@@ -24,6 +24,7 @@ class SettingsFactory extends Factory
       'company_name' => fake('ZA')->company(),
       'company_email' => fake('ZA')->companyEmail(),
       'company_phone' => fake('ZA')->phoneNumber(),
+      'currency' => fake('ZA')->currencyCode(),
     ];
   }
 }

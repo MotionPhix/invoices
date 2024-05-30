@@ -20,6 +20,7 @@ class Invoice extends Model
     'invoice_number',
     'invoice_date',
     'description',
+    'currency',
     'status',
   ];
 

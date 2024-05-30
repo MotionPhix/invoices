@@ -11,7 +11,7 @@ class InvoiceController extends Controller
   public function index()
   {
 
-    $invoices = Invoice::with('items')->get();
+    $invoices = Invoice::get();
 
     return view('invoices.index', compact('invoices'));
 
@@ -22,7 +22,7 @@ class InvoiceController extends Controller
     $invoice = new Invoice();
     $invoice->items = [['description' => '', 'quantity' => 1, 'unit_price' => 0]];
 
-    return view('invoices.create', compact('invoice'));
+    return view('invoices.form', compact('invoice'));
   }
 
   public function store(Request $request)
@@ -67,7 +67,7 @@ class InvoiceController extends Controller
 
     $invoice->load('items');
 
-    return view('invoices.edit', compact('invoice'));
+    return view('invoices.form', compact('invoice'));
   }
 
   public function update(Request $request, Invoice $invoice)

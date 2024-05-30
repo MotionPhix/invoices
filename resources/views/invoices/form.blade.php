@@ -4,7 +4,7 @@
 
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
 
-      New invoice
+      {{ $invoice->iid ? 'Edit invoice # ' . $invoice->invoice_number : 'New invoice' }}
 
     </h2>
 
@@ -76,11 +76,12 @@
 
 
       <x-splade-form
-        action="{{ route('invoices.store') }}"
+        action="{{ $invoice->iid ? route('invoices.update', $invoice) : route('invoices.store') }}"
         class="flex flex-col gap-6"
         default="{
           ...{{ $invoice }},
-        }">
+        }"
+        method="{{ $invoice->iid ? 'patch': 'post' }}">
 
         <x-splade-input
           name="invoice_date"
@@ -88,33 +89,90 @@
           required
           date />
 
+        <x-splade-select
+          name="currency"
+          label="Currency"
+          choices="{ searchEnabled: false }">
+
+          <option value="" disabled>Pick a currency...</option>
+
+          @foreach(\App\Models\Settings::CURRENCIES as $invoice_currency)
+
+            <option value="{{ $invoice_currency }}">
+
+              {{ $invoice_currency }}
+
+            </option>
+
+          @endforeach
+
+        </x-splade-select>
+
         <x-splade-textarea
           name="description"
           label="Description" />
 
         <div class="form-group">
 
-          <h2 class="text-xl mb-4">Invoice Items</h2>
+          <section class="flex items-center gap-6 mb-4">
+
+            <h2 class="text-xl">Invoice Items</h2>
+
+            <button
+              type="button"
+              @click="data.items.push({ description: '', quantity: 1, unit_price: 0 })"
+              class="size-8 bg-blue-500 text-white rounded-md flex items-center justify-center">
+              <x-tabler-plus class="size-5" stroke-width="3" />
+            </button>
+
+          </section>
 
           <x-splade-data default="{ items: form.items }">
 
             <div v-for="(item, index) in data.items" :key="index" class="item mb-2 flex items-center">
 
-              <input type="text" v-model="item.description" :name="'items[' + index + '][description]'" placeholder="Description" class="w-full border-gray-300 rounded-s-md shadow-sm" required />
-              <input type="number" v-model="item.quantity" :name="'items[' + index + '][quantity]'" placeholder="Quantity" class="w-full border-gray-300 shadow-sm" required />
-              <input type="number" v-model="item.unit_price" :name="'items[' + index + '][unit_price]'" placeholder="Unit Price" class="w-full border-gray-300 rounded-e-md shadow-sm" required />
+              <input
+                type="text"
+                v-model="item.description"
+                :name="'items[' + index + '][description]'"
+                placeholder="Description"
+                class="w-full border-none rounded-s-md shadow-sm"
+                required />
 
-              <button type="button" @click="data.items.splice(index, 1)" class="ml-2 px-4 py-2 bg-red-500 text-white rounded-md">Remove</button>
+              <input
+                type="number"
+                v-model="item.quantity"
+                :name="'items[' + index + '][quantity]'"
+                placeholder="Quantity"
+                class="border-none shadow-sm"
+                required />
+
+              <input
+                type="number"
+                v-model="item.unit_price"
+                :name="'items[' + index + '][unit_price]'"
+                placeholder="Unit Price"
+                class="border-none rounded-e-md shadow-sm"
+                required />
+
+              <article>
+                <button
+                  type="button"
+                  @click="data.items.splice(index, 1)"
+                  class="ml-2 size-8 bg-red-500 text-white rounded-md flex items-center justify-center">
+                  <x-tabler-x class="size-5" stroke-width="3" />
+                </button>
+              </article>
 
             </div>
-
-            <button type="button" @click="data.items.push({ description: '', quantity: 1, unit_price: 0 })" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md">Add Item</button>
 
           </x-splade-data>
 
         </div>
 
-        <x-splade-submit class="btn btn-primary">Create Invoice</x-splade-submit>
+        <x-splade-submit>
+          {{ $invoice->iid ? 'Update' : 'Create' }} Invoice
+        </x-splade-submit>
 
       </x-splade-form>
 

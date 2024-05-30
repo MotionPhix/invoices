@@ -3,17 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::middleware('splade')->group(function () {
   // Registers routes to support the interactive components...
   Route::spladeWithVueBridge();
@@ -69,7 +58,7 @@ Route::middleware('splade')->group(function () {
       )->name('invoices.store');
 
       Route::patch(
-        '/',
+        '/p/{invoice:iid}',
         '\App\Http\Controllers\InvoiceController@update'
       )->name('invoices.update');
 

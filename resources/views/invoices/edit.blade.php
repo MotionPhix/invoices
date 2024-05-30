@@ -29,14 +29,36 @@
 
             <div v-for="(item, index) in data.items" :key="index" class="item mb-2 flex items-center">
 
-              <input type="text" v-model="item.description" :name="`items[${index}][description]`" placeholder="Description" class="w-full border-gray-300 rounded-s-md shadow-sm" :readonly="{{ $invoice->status !== 'draft' }}" required />
+              <input
+                type="text"
+                v-model="item.description"
+                :name="`items[${index}][description]`"
+                placeholder="Description"
+                class="flex-1 rounded-s-md shadow-sm"
+                :readonly="{{ $invoice->iid && $invoice->status !== 'draft' }}"
+                required />
 
-              <input type="number" v-model="item.quantity" :name="`items[${index}][quantity]`" placeholder="Quantity" class="w-full border-gray-300 shadow-sm" :readonly="{{ $invoice->status !== 'draft' }}" required />
+              <input type="number" v-model="item.quantity" :name="`items[${index}][quantity]`" placeholder="Quantity" class="border-gray-300 shadow-sm" :readonly="{{ $invoice->status !== 'draft' }}" required />
 
-              <input type="number" v-model="item.unit_price" :name="`items[${index}][unit_price]`" placeholder="Unit Price" class="w-full border-gray-300 rounded-e-md shadow-sm" :readonly="{{ $invoice->status !== 'draft' }}" required />
+              <input
+                type="number"
+                v-model="item.unit_price"
+                :name="`items[${index}][unit_price]`"
+                placeholder="Unit Price"
+                class="flex-2 border-gray-300 rounded-e-md shadow-sm"
+                :readonly="{{ $invoice->status !== 'draft' }}"
+                step="0.01"
+                required />
 
               @if($invoice->status === 'draft')
-                <button type="button" @click="data.items.splice(index, 1)" class="ml-2 px-4 py-2 bg-red-500 text-white rounded-md">Remove</button>
+                <div>
+                  <button
+                    type="button"
+                    @click="data.items.splice(index, 1)"
+                    class="ml-2 size-8 bg-red-500 text-white rounded-md items-center flex justify-center">
+                    <x-tabler-x class="w-5 h-5" />
+                  </button>
+                </div>
               @endif
 
             </div>

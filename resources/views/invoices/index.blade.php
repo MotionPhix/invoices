@@ -50,164 +50,168 @@
 
                 <!-- Table -->
                 <table class="w-full divide-y divide-gray-200 dark:divide-neutral-700">
+
                   <thead class="bg-gray-50 dark:bg-neutral-900">
-                  <tr>
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                      Invoice number
-                    </span>
-                        <div class="hs-tooltip">
-                          <div class="hs-tooltip-toggle">
-                            <svg class="flex-shrink-0 text-gray-500 size-4 dark:text-neutral-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                            <span class="absolute z-10 invisible inline-block px-2 py-1 text-xs font-medium text-white transition-opacity bg-gray-900 rounded shadow-sm opacity-0 hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible dark:bg-neutral-700" role="tooltip">
-                          Invoice number related popup
-                        </span>
-                          </div>
+
+                    <tr>
+                      <th scope="col" class="px-6 py-3 text-start">
+
+                        <div class="flex items-center gap-x-2">
+
+                          <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            Invoice number
+                          </span>
+
                         </div>
-                      </div>
-                    </th>
 
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                      Amount
-                    </span>
-                      </div>
-                    </th>
+                      </th>
 
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                      Customer
-                    </span>
-                      </div>
-                    </th>
+                      <th scope="col" class="px-6 py-3 text-start">
+                        <div class="flex items-center gap-x-2">
+                          <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            Customer
+                          </span>
+                        </div>
+                      </th>
 
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                        <span
-                          class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                          VAT
-                        </span>
-                      </div>
-                    </th>
+                      <th scope="col" class="px-6 py-3 text-start">
+                        <div class="flex items-center gap-x-2">
+                          <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            Due
+                          </span>
+                        </div>
+                      </th>
 
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                      Due
-                    </span>
-                      </div>
-                    </th>
+                      <th scope="col" class="px-6 py-3 text-start">
+                        <div class="flex items-center gap-x-2">
+                          <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            Status
+                          </span>
+                        </div>
+                      </th>
 
-                    <th scope="col" class="px-6 py-3 text-start">
-                      <div class="flex items-center gap-x-2">
-                    <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
-                      Total
-                    </span>
-                      </div>
-                    </th>
+                      <th scope="col" class="px-6 py-3 text-start">
+                        <div class="flex items-center gap-x-2">
+                          <span
+                            class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            VAT
+                          </span>
+                        </div>
+                      </th>
 
-                    <th scope="col" class="px-6 py-3 text-end"></th>
-                  </tr>
+                      <th scope="col" class="px-6 py-3 text-start">
+                        <div class="flex items-center gap-x-2">
+                          <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
+                            Total
+                          </span>
+                        </div>
+                      </th>
+
+                      <th scope="col" class="px-6 py-3 text-end"></th>
+                    </tr>
+
                   </thead>
 
                   <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
 
-                  @foreach ($invoices as $invoice)
+                    @foreach ($invoices as $invoice)
 
-                    <tr class="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
-
-                    <td class="size-px whitespace-nowrap">
-                      <button type="button" class="block" data-hs-overlay="#hs-ai-invoice-modal">
-                    <span class="block px-6 py-2">
-                      <span class="font-mono text-sm text-blue-600 dark:text-blue-500">
-                        {{ $invoice->invoice_number }}
-                      </span>
-                    </span>
-                      </button>
-                    </td>
-                    <td class="size-px whitespace-nowrap">
-                      <button type="button" class="block" data-hs-overlay="#hs-ai-invoice-modal">
-                    <span class="block px-6 py-2">
-                      <span class="text-sm text-gray-600 dark:text-neutral-400">
-                        {{ $invoice->amount }}
-                      </span>
-                    </span>
-                      </button>
-                    </td>
-                    <td class="size-px whitespace-nowrap">
-                      <button type="button" class="block">
-                    <span class="block px-6 py-2">
-                      <span class="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded dark:bg-teal-500/10 dark:text-teal-500">
-                        {{ $invoice->user->name }}
-                      </span>
-                    </span>
-                      </button>
-                    </td>
-                    <td class="size-px whitespace-nowrap">
-                      <button type="button" class="block" data-hs-overlay="#hs-ai-invoice-modal">
-                    <span class="block px-6 py-2">
-                      <span class="text-sm text-gray-600 dark:text-neutral-400">
-                        {{ $invoice->vat_amount }}
-                      </span>
-                    </span>
-                      </button>
-                    </td>
-
-                    <td class="size-px whitespace-nowrap">
-                      <button type="button" class="block" data-hs-overlay="#hs-ai-invoice-modal">
-                    <span class="block px-6 py-2">
-                      <span class="text-sm text-gray-600 dark:text-neutral-400">
-                        {{ $invoice->invoice_date }}
-                      </span>
-                    </span>
-                      </button>
-                    </td>
+                      <tr class="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
 
                       <td class="size-px whitespace-nowrap">
-                        <button type="button" class="block" data-hs-overlay="#hs-ai-invoice-modal">
-                    <span class="block px-6 py-2">
-                      <span class="text-sm text-gray-600 dark:text-neutral-400">
-                        {{ $invoice->total_amount }}
-                      </span>
-                    </span>
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="font-mono text-sm text-blue-600 dark:text-blue-500">
+                              {{ $invoice->invoice_number }}
+                            </span>
+                          </span>
                         </button>
                       </td>
 
-                    <td class="size-px whitespace-nowrap">
+                      <td class="size-px whitespace-nowrap">
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="text-sm text-gray-600 dark:text-neutral-400">
+                              {{ $invoice->user->name }}
+                            </span>
+                          </span>
+                        </button>
+                      </td>
 
-                      <div class="flex items-center gap-2">
+                      <td class="size-px whitespace-nowrap">
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="text-sm text-gray-600 dark:text-neutral-400">
+                              {{ $invoice->invoice_date }}
+                            </span>
+                          </span>
+                        </button>
+                      </td>
 
-                        <x-splade-link
-                          href="{{ route('invoices.show', $invoice) }}"
-                          class="flex items-center gap-1 text-sm dark:text-white">
-                          <x-tabler-file class="w-5 h-5" />
-                          <span>View</span>
-                        </x-splade-link>
+                      <td class="size-px whitespace-nowrap">
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="capitalize py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded dark:bg-teal-500/10 dark:text-teal-500">
+                              {{ $invoice->status }}
+                            </span>
+                          </span>
+                        </button>
+                      </td>
 
-                        <x-splade-link
-                          href="{{ route('invoices.edit', $invoice) }}" class="flex items-center gap-1 ml-2 text-sm text-yellow-500">
-                          <x-tabler-pencil class="w-5 h-5" />
-                          <span>Edit</span>
-                        </x-splade-link>
+                      <td class="size-px whitespace-nowrap">
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="text-sm text-gray-600 dark:text-neutral-400">
+                              {{ \Illuminate\Support\Number::currency($invoice->vat_amount, in: $invoice->currency ?? \App\Models\Settings::where('id', 1)->first()->currency) }}
+                            </span>
+                          </span>
+                        </button>
+                      </td>
 
-                        <x-splade-link
-                          preserve-scroll
-                          href="{{ route('invoices.destroy', $invoice) }}"
-                          class="flex items-center gap-1 text-sm dark:text-white hover:text-red-500"
-                          method="delete">
-                          <x-tabler-trash class="w-5 h-5" />
-                          <span>Delete</span>
-                        </x-splade-link>
+                      <td class="size-px whitespace-nowrap">
+                        <button type="button" class="block">
+                          <span class="block px-6 py-2">
+                            <span class="text-sm text-gray-600 dark:text-neutral-400">
 
-                      </div>
+                              {{ \Illuminate\Support\Number::currency($invoice->total_amount, in: $invoice->currency ?? \App\Models\Settings::where('id', 1)->first()->currency) }}
 
-                    </td>
-                  </tr>
+                            </span>
+                          </span>
+                        </button>
+                      </td>
 
-                  @endforeach
+                      <td class="size-px whitespace-nowrap">
+
+                        <div class="flex items-center gap-2">
+
+                          <x-splade-link
+                            href="{{ route('invoices.show', $invoice) }}"
+                            class="flex items-center gap-1 text-sm dark:text-white">
+                            <x-tabler-file class="w-5 h-5" />
+                            <span>View</span>
+                          </x-splade-link>
+
+                          <x-splade-link
+                            href="{{ route('invoices.edit', $invoice) }}" class="flex items-center gap-1 ml-2 text-sm text-yellow-500">
+                            <x-tabler-pencil class="w-5 h-5" />
+                            <span>Edit</span>
+                          </x-splade-link>
+
+                          <x-splade-link
+                            preserve-scroll
+                            href="{{ route('invoices.destroy', $invoice) }}"
+                            class="flex items-center gap-1 text-sm dark:text-white hover:text-red-500"
+                            method="delete">
+                            <x-tabler-trash class="w-5 h-5" />
+                            <span>Delete</span>
+                          </x-splade-link>
+
+                        </div>
+
+                      </td>
+                    </tr>
+
+                    @endforeach
 
                   </tbody>
 
@@ -244,10 +248,14 @@
                 </div>
                 <!-- End Footer -->
               </div>
+
             </div>
+
           </div>
+
         </div>
         <!-- End Card -->
+
       </div>
       <!-- End Table Section -->
 

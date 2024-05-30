@@ -21,6 +21,7 @@ class InvoiceFactory extends Factory
     return [
       'invoice_date' => fake()->date(),
       'description' => fake('ZA')->sentence,
+      'currency' => fake()->randomElement(['ZAR', '', 'MWK', '', 'ZMW', '']),
     ];
   }
 }
