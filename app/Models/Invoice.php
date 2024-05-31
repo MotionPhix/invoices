@@ -69,12 +69,6 @@ class Invoice extends Model
 
     $lastInvoice = self::orderBy('id', 'desc')->first();
 
-    /*$number = $lastInvoice
-      ? intval(substr($lastInvoice->invoice_number, strlen($prefix))) + 1
-      : $settings->invoice_start_number;
-
-    return $prefix . str_pad($number, $settings->invoice_number_length, '0', STR_PAD_LEFT);*/
-
     if ($lastInvoice) {
 
       $lastNumber = intval(str_replace([$prefix, $suffix], '', $lastInvoice->invoice_number));

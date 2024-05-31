@@ -12,7 +12,7 @@
 
   <div class="py-12">
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
       <x-splade-form
         action="{{ $invoice->iid ? route('invoices.update', $invoice) : route('invoices.store') }}"
@@ -72,7 +72,9 @@
 
         <x-splade-textarea
           name="description"
-          label="Invoice terms" />
+          label="Invoice terms"
+          autosize
+        />
 
         <section>
 

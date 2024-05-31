@@ -23,7 +23,8 @@ class SettingsController extends Controller
     $validated = $request->validate([
       'invoice_prefix' => 'required|string|max:5',
       'invoice_suffix' => 'nullable|string|max:5',
-      'invoice_start_number' => 'sometimes|integer|min:1',
+      'invoice_number_length' => 'required|integer|min:3',
+      'invoice_start_number' => 'required|integer|min:1',
       'currency' => 'nullable|string|max:3',
       'vat_rate' => 'required|numeric|min:0|max:100',
       'company_name' => 'required|string|max:255',

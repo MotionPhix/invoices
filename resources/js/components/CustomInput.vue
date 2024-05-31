@@ -67,7 +67,7 @@ watch(currentEditing, (newVal) => {
       class="hover:bg-white/20 w-full overflow-hidden border border-transparent rounded-md cursor-pointer px-3 py-1.5"
       :class="{ 'text-ellipsis': props.shouldBeShort, 'invisible': isEditing }"
       @click="edit">
-      {{ customModel ? customModel : ' ' }}
+      {{ customModel ?? 'This here' }}
     </div>
 
     <textarea

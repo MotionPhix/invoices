@@ -149,7 +149,15 @@
                       <td class="size-px whitespace-nowrap">
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
-                            <span class="capitalize py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded dark:bg-teal-500/10 dark:text-teal-500">
+                            <span
+                              class="capitalize py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium rounded"
+                              @class([
+                                'bg-rose-100 text-rose-800  dark:bg-rose-500/10 dark:text-rose-500' => $invoice->status == 'canceled',
+                                'bg-blue-100 text-blue-800  dark:bg-blue-500/10 dark:text-blue-500' => $invoice->status == 'partial',
+                                'bg-gray-100 text-gray-800  dark:bg-gray-500/10 dark:text-gray-500' => $invoice->status == 'draft',
+                                'bg-teal-100 text-teal-800  dark:bg-teal-500/10 dark:text-teal-500' => $invoice->status == 'paid',
+                              ])
+                            >
                               {{ $invoice->status }}
                             </span>
                           </span>

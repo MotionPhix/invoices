@@ -15,6 +15,7 @@ class Settings extends Model
     'invoice_prefix',
     'invoice_suffix',
     'invoice_start_number',
+    'invoice_number_length',
     'currency',
     'vat_rate',
     'company_name',

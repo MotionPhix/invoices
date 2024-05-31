@@ -75,7 +75,7 @@ class InvoiceController extends Controller
     $validated = $request->validate([
       'invoice_date' => 'required|date',
       'currency' => 'nullable|string|in:' . implode(',', \App\Models\Settings::CURRENCIES),
-      'status' => 'string|in:' . implode(',',array_column(\App\Models\YourModel::STATUSES, 'value')),
+      'status' => 'string|in:' . implode(',', array_column(\App\Models\Invoice::STATUSES, 'value')),
       'description' => 'nullable|string',
       'items' => 'required|array',
       'items.*.description' => 'required|string',
@@ -88,7 +88,9 @@ class InvoiceController extends Controller
     $invoice->items()->delete();
 
     foreach ($validated['items'] as $item) {
+
       $invoice->items()->create($item);
+
     }
 
     return redirect()->route('invoices.show', $invoice);
@@ -96,7 +98,10 @@ class InvoiceController extends Controller
 
   public function destroy(Invoice $invoice)
   {
+
     $invoice->delete();
+
     return redirect()->route('invoices.index');
+
   }
 }

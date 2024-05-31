@@ -8,6 +8,15 @@
 
     </h2>
 
+    <span class="mx-6"></span>
+
+    <x-splade-link
+      class="flex items-center gap-1.5 font-medium text-teal-800 bg-teal-100 rounded px-2 py-1"
+      href="{{ route('invoices.edit', $invoice) }}">
+      <x-tabler-pencil class="size-5" />
+      <span>Edit</span>
+    </x-splade-link>
+
   </x-slot>
 
   <div class="py-12">
@@ -94,9 +103,16 @@
               <div class="border border-gray-200 p-4 rounded-lg space-y-4 dark:border-neutral-700">
                 <div class="hidden sm:grid sm:grid-cols-6">
                   <div class="sm:col-span-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Item</div>
+
                   <div class="text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Qty</div>
-                  <div class="text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Rate</div>
-                  <div class="text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Amount</div>
+
+                  <div class="text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">
+                    Rate ({{ $invoice->currency ?? \App\Models\Settings::first()->currency }})
+                  </div>
+
+                  <div class="text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">
+                    Amount ({{ $invoice->currency ?? \App\Models\Settings::first()->currency }})
+                  </div>
                 </div>
 
                 <div class="hidden sm:block border-b border-gray-200 dark:border-neutral-700"></div>
@@ -122,14 +138,14 @@
                     <div>
                       <h5 class="sm:hidden text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Rate</h5>
                       <p class="text-gray-800 dark:text-neutral-200">
-                        {{ $item->unit_price }}
+                        {{ \Illuminate\Support\Number::format($item->unit_price, precision: 2) }}
                       </p>
                     </div>
 
                     <div>
                       <h5 class="sm:hidden text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Amount</h5>
                       <p class="sm:text-end text-gray-800 dark:text-neutral-200">
-                        {{ $item->unit_price * $item->quantity }}
+                        {{ \Illuminate\Support\Number::format($item->unit_price * $item->quantity, precision: 2) }}
                       </p>
                     </div>
                   </div>
@@ -150,32 +166,35 @@
                   <dl class="grid sm:grid-cols-5 gap-x-3">
                     <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Subtotal:</dt>
                     <dd class="col-span-2 text-gray-500 dark:text-neutral-500">
-                      {{ $invoice->subtotal }}
+                      {{ \Illuminate\Support\Number::format($invoice->subtotal, precision: 2) }}
                     </dd>
                   </dl>
 
                   <dl class="grid sm:grid-cols-5 gap-x-3">
                     <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Total:</dt>
                     <dd class="col-span-2 text-gray-500 dark:text-neutral-500">
-                      {{ $invoice->totalAmount }}
+                      {{ \Illuminate\Support\Number::format($invoice->totalAmount, precision: 2) }}
                     </dd>
                   </dl>
 
                   <dl class="grid sm:grid-cols-5 gap-x-3">
-                    <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Tax ({{ $settings->vat_rate }}%):</dt>
+                    <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">
+                      Tax ({{ $settings->vat_rate }}%):
+                    </dt>
+
                     <dd class="col-span-2 text-gray-500 dark:text-neutral-500">
-                      {{ $invoice->vatAmount }}
+                      {{ \Illuminate\Support\Number::format($invoice->vatAmount, precision: 2) }}
                     </dd>
                   </dl>
 
                   <dl class="grid sm:grid-cols-5 gap-x-3">
                     <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Amount paid:</dt>
-                    <dd class="col-span-2 text-gray-500 dark:text-neutral-500">$2789.00</dd>
+                    <dd class="col-span-2 text-gray-500 dark:text-neutral-500">-</dd>
                   </dl>
 
                   <dl class="grid sm:grid-cols-5 gap-x-3">
                     <dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Due balance:</dt>
-                    <dd class="col-span-2 text-gray-500 dark:text-neutral-500">$0.00</dd>
+                    <dd class="col-span-2 text-gray-500 dark:text-neutral-500">-</dd>
                   </dl>
                 </div>
                 <!-- End Grid -->
@@ -183,9 +202,17 @@
             </div>
             <!-- End Flex -->
 
-            <div class="mt-8 sm:mt-12">
+            <div class="mt-8 sm:mt-12 max-w-xl">
               <h4 class="text-lg font-semibold text-gray-800 dark:text-neutral-200">Thank you!</h4>
-              <p class="text-gray-500 dark:text-neutral-500">If you have any questions concerning this invoice, use the following contact information:</p>
+
+              <p class="text-gray-500 dark:text-neutral-500">
+                {{ $invoice->description }}
+              </p>
+
+              <p class="text-gray-500 dark:text-neutral-500 mt-2">
+                If you have any questions concerning this invoice, use the following contact information:
+              </p>
+
               <div class="mt-2">
                 <p class="block text-sm font-medium text-gray-800 dark:text-neutral-200">
                   {{ $settings->company_email }}
