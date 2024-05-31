@@ -120,7 +120,9 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="font-mono text-sm text-blue-600 dark:text-blue-500">
+
                               {{ $invoice->invoice_number }}
+
                             </span>
                           </span>
                         </button>
@@ -130,7 +132,9 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="text-sm text-gray-600 dark:text-neutral-400">
+
                               {{ $invoice->user->name }}
+
                             </span>
                           </span>
                         </button>
@@ -140,7 +144,9 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="text-sm text-gray-600 dark:text-neutral-400">
+
                               {{ $invoice->invoice_date }}
+
                             </span>
                           </span>
                         </button>
@@ -150,7 +156,9 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="capitalize py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded dark:bg-teal-500/10 dark:text-teal-500">
+
                               {{ $invoice->status }}
+
                             </span>
                           </span>
                         </button>
@@ -160,7 +168,9 @@
                         <button type="button" class="block">
                           <span class="block px-6 py-2">
                             <span class="text-sm text-gray-600 dark:text-neutral-400">
+
                               {{ \Illuminate\Support\Number::currency($invoice->vat_amount, in: $invoice->currency ?? \App\Models\Settings::first()->currency) }}
+
                             </span>
                           </span>
                         </button>
@@ -190,7 +200,8 @@
                           </x-splade-link>
 
                           <x-splade-link
-                            href="{{ route('invoices.edit', $invoice) }}" class="flex items-center gap-1 ml-2 text-sm text-yellow-500">
+                            href="{{ route('invoices.edit', $invoice) }}"
+                            class="flex items-center gap-1 ml-2 text-sm text-yellow-500">
                             <x-tabler-pencil class="w-5 h-5" />
                             <span>Edit</span>
                           </x-splade-link>
