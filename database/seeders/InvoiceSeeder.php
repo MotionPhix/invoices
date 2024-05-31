@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\User;
@@ -15,14 +16,15 @@ class InvoiceSeeder extends Seeder
    */
   public function run(): void
   {
-    $users = User::inRandomOrder()->limit(4)->get();
+    $users = User::get('id');
 
-    $users->each(function ($user) {
+    Contact::inRandomOrder()->limit(5)->each(function ($contact) use($users) {
 
-      Invoice::factory(10)
-        ->has(InvoiceItem::factory()->count(rand(3, 7)), 'items')
+      Invoice::factory(rand(1, 2))
+        ->has(InvoiceItem::factory()->count(rand(3, 6)), 'items')
         ->create([
-          'user_id' => $user->id,
+          'contact_id' => $contact->id,
+          'user_id' => $users->random()->id,
           'invoice_number' => Invoice::generateInvoiceNumber(),
         ]);
 

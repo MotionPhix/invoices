@@ -9,7 +9,8 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "protonemedia/laravel-splade-breeze": "^2.5",
-        "ryangjchandler/blade-tabler-icons": "^2.3"
+        "ryangjchandler/blade-tabler-icons": "^2.3",
+        "stevebauman/purify": "^6.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

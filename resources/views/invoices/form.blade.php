@@ -12,7 +12,7 @@
 
   <div class="py-12">
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
       <x-splade-form
         action="{{ $invoice->iid ? route('invoices.update', $invoice) : route('invoices.store') }}"
@@ -22,20 +22,21 @@
         }"
         method="{{ $invoice->iid ? 'patch': 'post' }}">
 
-        <x-splade-input
-          name="invoice_date"
-          label="Invoice due date"
-          required
-          date />
+        <section class="grid grid-cols-3 gap-6">
 
-        <section class="grid grid-cols-2 gap-6">
+          <x-splade-input
+            name="invoice_date"
+            label="Invoice due date"
+            placeholder="Enter payment due date"
+            required
+            date />
 
           <x-splade-select
             name="currency"
             label="Currency"
             choices="{ searchEnabled: false }">
 
-            <option value="" disabled>Pick a currency...</option>
+            <option value="" disabled>Pick a currency</option>
 
             @foreach(\App\Models\Settings::CURRENCIES as $invoice_currency)
 
@@ -54,7 +55,7 @@
             label="Status"
             choices="{ searchEnabled: false }">
 
-            <option value="" disabled>Set an invoice status...</option>
+            <option value="" disabled>Set an invoice status</option>
 
             @foreach(\App\Models\Invoice::STATUSES as $invoice_status)
 
@@ -72,7 +73,10 @@
 
         <x-splade-textarea
           name="description"
-          label="Invoice terms" />
+          label="Invoice terms"
+          placeholder="Invoice terms or notes"
+          autosize
+        />
 
         <section>
 
@@ -84,8 +88,8 @@
 
               <button
                 type="button"
-                @click="data.items.push({ description: '', quantity: 1, unit_price: 0 })"
-                class="size-8 bg-blue-500 text-white rounded-md flex items-center justify-center">
+                @click="data.items.push({ description: 'Dummy item', quantity: 1, unit_price: 0 })"
+                class="size-7 bg-blue-500 text-white rounded flex items-center justify-center">
                 <x-tabler-plus class="size-5" />
               </button>
 
@@ -105,13 +109,15 @@
                 <div class="hidden sm:block border-b border-gray-200 dark:border-neutral-700"></div>
 
                 <div
-                  class="grid grid-cols-8 sm:grid-cols-10 gap-2"
+                  class="grid grid-cols-8 sm:grid-cols-10 gap-2 relative"
                   v-for="(item, index) in data.items"
                   :class="{ 'grid-cols-8': data.items.length > 1, 'pb-3 border-b border-gray-200 dark:border-neutral-700': index !== data.items.length - 1 }"
                   :key="index">
 
                   <div class="col-span-full sm:col-span-7">
-                    <CustomInput v-model="item.description" placeholder="Enter unit price" />
+                    <CustomInput
+                      v-model="item.description"
+                      placeholder="Enter unit price" />
                   </div>
 
                   <div>
@@ -137,12 +143,30 @@
 
                   <div>
                     <h5 class="sm:hidden text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Line total</h5>
-                    <p class="sm:text-end text-gray-800 dark:text-neutral-200" v-text="item.unit_price * item.quantity" />
+                    <p class="sm:text-end text-gray-800 dark:text-neutral-200 pt-2" v-text="item.unit_price * item.quantity" />
                   </div>
+
+                  @if($invoice->status === 'draft')
+
+                    <div v-if="data.items.length > 1" class="absolute -right-12 top-2">
+
+                      <button
+                        type="button"
+                        @click="data.items.splice(index, 1)"
+                        class="ml-2 size-6 bg-red-500 text-white rounded-md items-center flex justify-center">
+
+                        <x-tabler-x class="w-5 h-5" />
+
+                      </button>
+
+                    </div>
+
+                  @endif
 
                 </div>
 
               </div>
+
             </div>
             <!-- End Table -->
 

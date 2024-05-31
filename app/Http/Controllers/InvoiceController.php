@@ -19,8 +19,8 @@ class InvoiceController extends Controller
 
   public function create()
   {
-    $invoice = new Invoice();
-    $invoice->items = [['description' => '', 'quantity' => 1, 'unit_price' => 0]];
+    $invoice = new Invoice(['status' => 'draft']);
+    $invoice->items = [['description' => 'Sample item', 'quantity' => 1, 'unit_price' => 0]];
 
     return view('invoices.form', compact('invoice'));
   }
@@ -57,11 +57,11 @@ class InvoiceController extends Controller
 
   public function edit(Invoice $invoice)
   {
-    if ($invoice->status !== Invoice::STATUS_DRAFT && $invoice->status !== Invoice::STATUS_PARTIAL) {
+    if (! in_array($invoice->status, [Invoice::STATUS_DRAFT, Invoice::STATUS_PARTIAL])) {
 
-      Toast::message('Only draft or partially paid invoices can be edited.');
+      Toast::message('Only draft or partially paid invoices can be edited.')->autoDismiss(5);
 
-      return redirect()->route('invoices.index');
+      return redirect()->back();
 
     }
 
@@ -75,7 +75,7 @@ class InvoiceController extends Controller
     $validated = $request->validate([
       'invoice_date' => 'required|date',
       'currency' => 'nullable|string|in:' . implode(',', \App\Models\Settings::CURRENCIES),
-      'status' => 'string|in:' . implode(',',array_column(\App\Models\YourModel::STATUSES, 'value')),
+      'status' => 'string|in:' . implode(',', array_column(\App\Models\Invoice::STATUSES, 'value')),
       'description' => 'nullable|string',
       'items' => 'required|array',
       'items.*.description' => 'required|string',
@@ -88,15 +88,22 @@ class InvoiceController extends Controller
     $invoice->items()->delete();
 
     foreach ($validated['items'] as $item) {
+
       $invoice->items()->create($item);
+
     }
 
-    return redirect()->route('invoices.show', $invoice);
+    Toast::message('Invoices was updated successfully.')->autoDismiss(5);
+
+    return redirect()->back();
   }
 
   public function destroy(Invoice $invoice)
   {
+
     $invoice->delete();
+
     return redirect()->route('invoices.index');
+
   }
 }

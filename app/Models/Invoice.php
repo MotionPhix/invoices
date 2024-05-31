@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -24,6 +25,7 @@ class Invoice extends Model
 
   protected $fillable = [
     'user_id',
+    'contact_id',
     'invoice_number',
     'invoice_date',
     'description',
@@ -36,27 +38,39 @@ class Invoice extends Model
     return $this->belongsTo(User::class);
   }
 
+  public function contact()
+  {
+    return $this->belongsTo(Contact::class);
+  }
+
   public function items()
   {
     return $this->hasMany(InvoiceItem::class);
   }
 
-  public function getSubtotalAttribute()
+  public function subtotal(): Attribute
   {
-    return $this->items->sum(function ($item) {
-      return $item->quantity * $item->unit_price;
-    });
+    return Attribute::make(
+      get: fn() => $this->items->sum(function ($item) {
+        return $item->quantity * $item->unit_price;
+      })
+    );
   }
 
-  public function getVatAmountAttribute()
+  public function vatAmount(): Attribute
   {
     $settings = Settings::first();
-    return $this->subtotal * ($settings->vat_rate / 100);
+
+    return Attribute::make(
+      get: fn() => $this->subtotal * ($settings->vat_rate / 100)
+    );
   }
 
-  public function getTotalAmountAttribute()
+  public function totalAmount(): Attribute
   {
-    return $this->subtotal + $this->vatAmount;
+    return Attribute::make(
+      get: fn() => $this->subtotal + $this->vatAmount
+    );
   }
 
   public static function generateInvoiceNumber()
@@ -68,12 +82,6 @@ class Invoice extends Model
     $suffix = $settings->invoice_suffix;
 
     $lastInvoice = self::orderBy('id', 'desc')->first();
-
-    /*$number = $lastInvoice
-      ? intval(substr($lastInvoice->invoice_number, strlen($prefix))) + 1
-      : $settings->invoice_start_number;
-
-    return $prefix . str_pad($number, $settings->invoice_number_length, '0', STR_PAD_LEFT);*/
 
     if ($lastInvoice) {
 

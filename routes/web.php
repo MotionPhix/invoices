@@ -21,9 +21,8 @@ Route::middleware('splade')->group(function () {
   });
 
   Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-      return view('dashboard');
-    })->middleware(['verified'])->name('dashboard');
+
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
@@ -36,9 +35,10 @@ Route::middleware('splade')->group(function () {
 
     Route::patch('/settings/u/{settings}', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
-//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+
     Route::group(['prefix' => 'invoices'], function () {
 
       Route::get(
