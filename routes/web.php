@@ -44,7 +44,7 @@ Route::middleware('splade')->group(function () {
 
       Route::get(
         '/p/{invoice:iid}',
-        [\App\Http\Controllers\PrintController::class, 'print']
+        \App\Http\Controllers\DownloadController::class
       )->name('invoices.print');
 
       Route::get(
