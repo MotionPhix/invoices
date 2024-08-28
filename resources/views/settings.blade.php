@@ -87,6 +87,24 @@
             label="Company name"
             required />
 
+          <!-- Start Address -->
+          <section>
+
+            <x-splade-data>
+
+              <AddressFieldGroup
+                v-model:street="form.address.street"
+                v-model:city="form.address.city"
+                v-model:state="form.address.state"
+                v-model:country="form.address.country"
+                type="work" />
+
+            </x-splade-data>
+
+          </section>
+
+          <!-- End Address -->
+
           <x-splade-input
             type="email"
             name="company_email"

@@ -12,7 +12,7 @@ class SettingsController extends Controller
   public function index()
   {
 
-    $settings = Settings::first();
+    $settings = Settings::with('address')->first();
 
     return view('settings', compact('settings'));
 

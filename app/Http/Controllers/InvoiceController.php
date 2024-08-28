@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use ProtoneMedia\Splade\Facades\Toast;
@@ -27,9 +28,14 @@ class InvoiceController extends Controller
 
   public function store(Request $request)
   {
+    $contact = Contact::inRandomOrder()->first();
+
+    $request->merge(["contact_id" => $contact->id]);
+
     $validated = $request->validate([
       'invoice_date' => 'required|date',
       'description' => 'nullable|string',
+      'contact_id' => 'required|exists:contacts,id',
       'items' => 'required|array',
       'items.*.description' => 'required|string',
       'items.*.quantity' => 'required|integer',

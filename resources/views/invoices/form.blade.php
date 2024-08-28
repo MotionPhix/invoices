@@ -8,6 +8,19 @@
 
     </h2>
 
+    @if ($invoice->iid)
+
+      <span class="mx-6 flex-1"></span>
+
+      <x-splade-link
+        class="flex items-center gap-1.5 font-medium text-teal-800 bg-teal-100 rounded px-2 py-1"
+        href="{{ route('invoices.show', $invoice) }}">
+        <x-tabler-file-info class="size-5" />
+        <span>Detail</span>
+      </x-splade-link>
+
+    @endif
+
   </x-slot>
 
   <div class="py-12">
@@ -84,7 +97,7 @@
 
             <header class="flex items-center gap-6 mb-6">
 
-              <h2 class="text-xl">Item summary</h2>
+              <h2 class="text-xl flex-1">Item summary</h2>
 
               <button
                 type="button"

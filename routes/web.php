@@ -35,16 +35,17 @@ Route::middleware('splade')->group(function () {
 
     Route::patch('/settings/u/{settings}', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
-
     Route::group(['prefix' => 'invoices'], function () {
 
       Route::get(
         '/',
         '\App\Http\Controllers\InvoiceController@index'
       )->name('invoices.index');
+
+      Route::get(
+        '/p/{invoice:iid}',
+        [\App\Http\Controllers\PrintController::class, 'print']
+      )->name('invoices.print');
 
       Route::get(
         '/s/{invoice:iid}',

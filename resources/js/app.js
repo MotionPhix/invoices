@@ -14,6 +14,8 @@ import {renderSpladeApp, SpladePlugin} from "@protonemedia/laravel-splade";
 
 import CustomInput from "@/components/CustomInput.vue";
 
+import AddressFieldGroup from "@/components/AddressFieldGroup.vue";
+
 import { UseDark } from "@vueuse/components";
 
 const el = document.getElementById("app");
@@ -27,6 +29,7 @@ createApp({
     "progress_bar": true,
     "components": {
       CustomInput,
+      AddressFieldGroup,
       UseDark
     }
   })
