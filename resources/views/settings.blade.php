@@ -12,6 +12,7 @@
 
       <x-splade-form
         action="{{ route('settings.update', $settings) }}"
+        preserve-scroll
         method="patch"
         class="space-y-6"
         default="{
