@@ -12,7 +12,7 @@
             <tr>
               <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-start dark:text-neutral-500">Company</th>
               <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-start dark:text-neutral-500">Total amount</th>
-              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-start dark:text-neutral-500">Issue date</th>
+              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-start dark:text-neutral-500">Paid on</th>
               <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-end dark:text-neutral-500">Status</th>
             </tr>
           </thead>
@@ -35,7 +35,7 @@
 
                 <td
                   class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
-                  {{ $invoice->created_at->format('Y-m-d') }}
+                  {{ $invoice->updated_at->format('d M, Y') }}
                 </td>
 
                 <td class="px-6 py-4 text-sm font-medium capitalize whitespace-nowrap text-end">

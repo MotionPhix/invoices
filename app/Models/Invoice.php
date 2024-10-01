@@ -14,12 +14,14 @@ class Invoice extends Model
   const STATUS_DRAFT = 'draft';
   const STATUS_PAID = 'paid';
   const STATUS_PARTIAL = 'partial';
+  const STATUS_UNPAID = 'unpaid';
   const STATUS_CANCELED = 'canceled';
 
   const STATUSES = [
     ['label' => 'Draft', 'value' => self::STATUS_DRAFT],
     ['label' => 'Paid', 'value' => self::STATUS_PAID],
     ['label' => 'Partial', 'value' => self::STATUS_PARTIAL],
+    ['label' => 'Unpaid', 'value' => self::STATUS_UNPAID],
     ['label' => 'Canceled', 'value' => self::STATUS_CANCELED],
   ];
 
@@ -73,6 +75,18 @@ class Invoice extends Model
     );
   }
 
+  public function payments()
+  {
+    return $this->hasMany(InvoicePayment::class);
+  }
+
+  public function amountDue(): Attribute
+  {
+    return Attribute::make(
+      get: fn() => $this->totalAmount - $this->payments->sum('amount')
+    );
+  }
+
   public static function generateInvoiceNumber()
   {
     $settings = Settings::first();
@@ -87,11 +101,9 @@ class Invoice extends Model
 
       $lastNumber = intval(str_replace([$prefix, $suffix], '', $lastInvoice->invoice_number));
       $newNumber = $lastNumber + 1;
-
     } else {
 
       $newNumber = $settings->invoice_start_number;
-
     }
 
     return $prefix . str_pad($newNumber, $settings->invoice_number_length, '0', STR_PAD_LEFT) . $suffix;
@@ -106,13 +118,11 @@ class Invoice extends Model
       if (! isset($invoice->user_id)) {
 
         $invoice->user_id = auth()->user()->id;
-
       }
 
       $invoice->iid = Str::orderedUuid();
       $invoice->status = Invoice::STATUS_DRAFT;
       $invoice->invoice_number = self::generateInvoiceNumber();
-
     });
 
     static::updating(function ($invoice) {
@@ -120,10 +130,7 @@ class Invoice extends Model
       if (!isset($invoice->iid)) {
 
         $invoice->iid = Str::orderedUuid();
-
       }
-
     });
   }
-
 }

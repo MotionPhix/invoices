@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
       CompanySeeder::class,
       ContactSeeder::class,
       InvoiceSeeder::class,
+      InvoicePaymentSeeder::class,
     ]);
   }
 }
