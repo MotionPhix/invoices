@@ -1,47 +1,115 @@
 <x-app-layout>
   <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <h2 class="text-xl font-semibold leading-tight text-gray-800">
       {{ __('Dashboard') }}
     </h2>
   </x-slot>
 
+  @php
+    $currentHour = \Carbon\Carbon::now()->format('H');
+
+    if ($currentHour < 12) {
+        $greeting = 'Good morning';
+    } elseif ($currentHour < 18) {
+        $greeting = 'Good afternoon';
+    } else {
+        $greeting = 'Good evening';
+    }
+  @endphp
+
   <div class="py-12">
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
 
-      <div class="container mx-auto p-4">
+      <div class="container p-4 mx-auto">
+
+        <div class="flex flex-wrap items-center m0bgt wn51l">
+          <div>
+            <h1 class="text-2xl font-bold dark:text-neutral-200">
+              {{ $greeting }}, {{ auth()->user()->name }}.
+            </h1>
+            <p class="mb-6 text-gray-500 dark:text-neutral-400">
+              Here's what's happening with your invoices today.
+            </p>
+          </div>
+        </div>
 
         <!-- Statistics Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3">
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Total Invoices</h2>
-            <p class="text-3xl">{{ $statistics['total_invoices'] }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Total invoices</span>
+              <x-tabler-file-invoice class="text-gray-400 size-6" />
+            </div>
+
+            <div class="text-3xl font-bold">
+              {{ $statistics['total_invoices'] }}
+            </div>
+
+            <div class="text-sm text-gray-500">21k orders</div>
+            <div class="text-green-500">↗ 12.5%</div>
           </div>
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Total Contacts</h2>
-            <p class="text-3xl">{{ $statistics['total_contacts'] }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Total contacts</span>
+              <x-tabler-users class="text-gray-400 size-6" />
+            </div>
+
+            <div class="text-3xl font-bold">{{ $statistics['total_contacts'] }}</div>
+            <div class="text-sm text-gray-500">21k orders</div>
+            <div class="text-green-500">↗ 12.5%</div>
           </div>
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Total Companies</h2>
-            <p class="text-3xl">{{ $statistics['total_companies'] }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Total companies</span>
+              <x-tabler-building class="text-gray-400 size-6" />
+            </div>
+
+            <div class="text-3xl font-bold">{{ $statistics['total_companies'] }}</div>
+            <div class="text-sm text-gray-500">5k orders</div>
+            <div class="text-green-500">↗ 4.3%</div>
           </div>
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Total Users</h2>
-            <p class="text-3xl">{{ $statistics['total_users'] }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Outstanding balance</span>
+              <x-tabler-currency-rupee class="text-gray-400 size-6" />
+            </div>
+
+            <div class="mb-2 text-3xl font-bold">
+              {{ $statistics['outstanding_invoices'] }}
+            </div>
+
+            <div class="text-sm text-gray-500">6k orders</div>
           </div>
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Total Revenue</h2>
-            <p class="text-3xl">${{ number_format($statistics['total_revenue'], 2) }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Total revenue</span>
+              <x-tabler-discount class="text-gray-400 size-6" />
+            </div>
+
+            <div class="mb-2 text-3xl font-bold">
+              {{ number_format($statistics['total_revenue'], 2) }}
+            </div>
+
+            <div class="text-sm text-gray-500">6k orders</div>
           </div>
 
-          <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold">Outstanding Invoices</h2>
-            <p class="text-3xl">{{ $statistics['outstanding_invoices'] }}</p>
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-500">Overdue invoices</span>
+              <x-tabler-alert-circle class="text-red-400 size-6" />
+            </div>
+
+            <div class="mb-2 text-3xl font-bold">
+              {{ $statistics['outstanding_invoices'] }}
+            </div>
+
+            <div class="text-sm text-gray-500">6k orders</div>
           </div>
 
         </div>
@@ -49,165 +117,9 @@
         <!-- Invoices Section -->
         <div class="mb-8">
 
-          <h2 class="text-xl font-semibold mb-4">Recent Invoices</h2>
+          <h2 class="mb-4 text-xl font-semibold">Recently paid invoices</h2>
 
-          <table class="min-w-full bg-white">
-
-            <thead>
-
-              <tr>
-
-                <th class="py-2">Invoice #</th>
-
-                <th class="py-2">Company</th>
-
-                <th class="py-2">Total Amount</th>
-
-                <th class="py-2">Status</th>
-
-                <th class="py-2">Date</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              @foreach($invoices as $invoice)
-
-                <tr>
-
-                  <td class="py-2">{{ $invoice->id }}</td>
-
-                  <td class="py-2">{{ $invoice->contact->company->name }}</td>
-
-                  <td class="py-2">${{ number_format($invoice->total_amount, 2) }}</td>
-
-                  <td class="py-2">{{ $invoice->status }}</td>
-
-                  <td class="py-2">{{ $invoice->created_at->format('Y-m-d') }}</td>
-
-                </tr>
-
-              @endforeach
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-        <!-- Contacts Section -->
-        <div class="mb-8">
-
-          <h2 class="text-xl font-semibold mb-4">Recent Contacts</h2>
-
-          <table class="min-w-full bg-white">
-
-            <thead>
-
-              <tr>
-                <th class="py-2">Name</th>
-                <th class="py-2">Email</th>
-                <th class="py-2">Phone</th>
-                <th class="py-2">Company</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              @foreach($contacts as $contact)
-
-                <tr>
-
-                  <td class="py-2">{{ $contact->name }}</td>
-
-                  <td class="py-2">{{ $contact->email }}</td>
-
-                  <td class="py-2">{{ $contact->phone }}</td>
-
-                  <td class="py-2">{{ $contact->company->name }}</td>
-
-                </tr>
-
-              @endforeach
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-        <!-- Companies Section -->
-        <div class="mb-8">
-
-          <h2 class="text-xl font-semibold mb-4">Companies</h2>
-
-          <table class="min-w-full bg-white">
-
-            <thead>
-
-              <tr>
-                <th class="py-2">Name</th>
-                <th class="py-2">Email</th>
-                <th class="py-2">Phone</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              @foreach($companies as $company)
-
-                <tr>
-
-                  <td class="py-2">{{ $company->name }}</td>
-
-                  <td class="py-2">{{ $company->email }}</td>
-
-                  <td class="py-2">{{ $company->phone }}</td>
-
-                </tr>
-
-              @endforeach
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-        <!-- Users Section -->
-        <div class="mb-8">
-
-          <h2 class="text-xl font-semibold mb-4">Users</h2>
-
-          <table class="min-w-full bg-white">
-
-            <thead>
-
-            <tr>
-              <th class="py-2">Name</th>
-              <th class="py-2">Email</th>
-              <th class="py-2">Role</th>
-            </tr>
-
-            </thead>
-
-            <tbody>
-
-              @foreach($users as $user)
-                <tr>
-                  <td class="py-2">{{ $user->name }}</td>
-                  <td class="py-2">{{ $user->email }}</td>
-                  <td class="py-2">{{ $user->role }}</td>
-                </tr>
-              @endforeach
-
-            </tbody>
-
-          </table>
+          <x-latest-invoice :invoices="$statistics['recently_paid_invoices']" />
 
         </div>
 

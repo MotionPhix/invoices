@@ -11,22 +11,17 @@ class DashboardController extends Controller
 {
   public function index()
   {
-    // Gather data for the dashboard
-    $invoices = Invoice::with('items', 'contact.company')->limit(10)->get();
-    $contacts = Contact::limit(5)->get();
-    $companies = Company::all();
-    $users = User::all();
-
     // Example statistics
     $statistics = [
-      'total_invoices' => $invoices->count(),
-      'total_contacts' => $contacts->count(),
-      'total_companies' => $companies->count(),
-      'total_users' => $users->count(),
-      'total_revenue' => $invoices->sum('total_amount'),
-      'outstanding_invoices' => $invoices->where('status', 'outstanding')->count(),
+      'total_invoices' => Invoice::count(),
+      'total_contacts' => Contact::count(),
+      'total_companies' => Company::count(),
+      'total_revenue' => Invoice::where('status', 'paid')->sum('total_amount'),
+      'recently_paid_invoices' => Invoice::where('status', 'paid')->orderBy('paid_at', 'desc')->take(5),
+      'outstanding_invoices' => Invoice::where('status', 'unpaid')->sum('amount_due'),
+      'overdue_invoices' => Invoice::where('due_date', '<', now())->where('status', 'unpaid')->count(),
     ];
 
-    return view('dashboard', compact('invoices', 'contacts', 'companies', 'users', 'statistics'));
+    return view('dashboard', compact('statistics'));
   }
 }
