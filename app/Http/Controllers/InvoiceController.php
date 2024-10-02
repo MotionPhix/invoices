@@ -65,7 +65,7 @@ class InvoiceController extends Controller
   {
     if (! in_array($invoice->status, [Invoice::STATUS_DRAFT, Invoice::STATUS_PARTIAL])) {
 
-      Toast::message('Only draft or partially paid invoices can be edited.')->autoDismiss(5);
+      Toast::danger('Only "draft" and "partially-paid" invoices can be edited.')->autoDismiss(5);
 
       return redirect()->back();
 

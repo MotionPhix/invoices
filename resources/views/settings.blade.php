@@ -8,7 +8,7 @@
 
   <div class="py-12">
 
-    <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
       <x-splade-form
         action="{{ route('settings.update', $settings) }}"
@@ -19,7 +19,7 @@
           ...{{ $settings }}
         }">
 
-        <div class="bg-white p-4 rounded-lg shadow-sm space-y-4">
+        <div class="p-4 space-y-4 bg-white rounded-lg shadow-sm">
 
           <h2 class="text-xl font-medium">Invoice settings</h2>
 
@@ -79,7 +79,7 @@
         </div>
 
         <!-- Company Information -->
-        <div class="bg-white p-4 rounded-lg shadow-sm space-y-4">
+        <div class="p-4 space-y-4 bg-white rounded-lg shadow-sm">
           <h2 class="text-xl font-medium">Company information</h2>
 
           <x-splade-input
@@ -119,7 +119,7 @@
         </div>
 
         <!-- Notification Settings -->
-        <div class="bg-white p-4 rounded-lg shadow-sm space-y-4">
+        <div class="p-4 space-y-4 bg-white rounded-lg shadow-sm">
           <h2 class="text-xl font-medium">Notifications</h2>
 
           <x-splade-checkbox
