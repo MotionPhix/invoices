@@ -30,33 +30,33 @@
               <tr>
 
                 <td
-                  class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
+                  class="px-6 py-2 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
                   {{ $invoice->invoice_number }}
                 </td>
 
                 <td
-                  class="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap dark:text-neutral-200">
-                  <span class="block">{{ $invoice->contact->full_name }}</span>
+                  class="px-6 py-2 text-sm font-medium text-gray-800 whitespace-nowrap dark:text-neutral-200">
+                  <div>{{ $invoice->contact->full_name }}</div>
 
                   @if ($invoice->contact->company_id)
-                    <span
+                    <div
                       class="text-xs text-gray-500 dark:text-neutral-500">
                       {{ $invoice->contact->company->name }}
-                    </span>
+                    </div>
                   @endif
                 </td>
 
                 <td
-                  class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
+                  class="px-6 py-2 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
                   {{ number_format($invoice->total_amount, 2) }}
                 </td>
 
                 <td
-                  class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
+                  class="px-6 py-2 text-sm text-gray-800 whitespace-nowrap dark:text-neutral-200">
                   {{ $invoice->updated_at->format('d M, Y') }}
                 </td>
 
-                <td class="px-6 py-4 whitespace-nowrap text-end">
+                <td class="px-6 py-2 whitespace-nowrap text-end">
                   <button
                     type="button"
                     class="inline-flex items-center text-sm font-semibold text-blue-600 border border-transparent rounded-lg gap-x-2 hover:text-blue-800 focus:outline-none focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">
