@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Client extends Model
 {
-  use HasFactory, SoftDeletes;
+  use HasFactory, SoftDeletes, LogsActivity;
 
   protected $fillable = [
     'name',
@@ -75,5 +77,28 @@ class Client extends Model
       $this->shipping_postal_code,
       $this->shipping_country,
     ]));
+  }
+
+  public function getActivitylogOptions(): LogOptions
+  {
+    return LogOptions::defaults()
+      ->logOnly([
+        'name',
+        'email',
+        'phone',
+        'company_name',
+        'billing_address',
+        'shipping_address',
+        'status',
+      ])
+      ->logOnlyDirty()
+      ->dontSubmitEmptyLogs()
+      ->setDescriptionForEvent(fn(string $eventName) => "Client was {$eventName}")
+      ->useLogName('client');
+  }
+
+  public function activities()
+  {
+    return $this->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject');
   }
 }

@@ -5,19 +5,78 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClientRequest;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Spatie\Activitylog\Models\Activity;
 
 class ClientController extends Controller
 {
-  public function index()
+  public function index(Request $request)
   {
-    $clients = Client::query()
-      ->orderBy('name')
-      ->paginate(10)
-      ->withQueryString();
+    $thirtyDaysAgo = now()->subDays(30);
+
+    $recentActivity = Activity::query()
+      ->where('log_name', 'client')
+      ->where('created_at', '>=', $thirtyDaysAgo)
+      ->select('event', DB::raw('count(*) as count'))
+      ->groupBy('event')
+      ->get()
+      ->mapWithKeys(fn ($item) => [$item->event => $item->count])
+      ->toArray();
+
+    $statistics = [
+      'total' => Client::count(),
+      'active' => Client::where('status', 'active')->count(),
+      'inactive' => Client::where('status', 'inactive')->count(),
+      'new_this_month' => Client::whereMonth('created_at', now()->month)->count(),
+      'recent_activity' => [
+        'total' => array_sum($recentActivity),
+        'created' => $recentActivity['created'] ?? 0,
+        'updated' => $recentActivity['updated'] ?? 0,
+        'deleted' => $recentActivity['deleted'] ?? 0,
+        'restored' => $recentActivity['restored'] ?? 0,
+      ],
+      'top_countries' => Client::select('country', DB::raw('count(*) as count'))
+        ->whereNotNull('country')
+        ->groupBy('country')
+        ->orderByDesc('count')
+        ->limit(5)
+        ->get(),
+    ];
+
+    $query = Client::query()
+      ->when($request->search, function ($query, $search) {
+        $query->where(function ($query) use ($search) {
+          $query->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('company_name', 'like', "%{$search}%")
+            ->orWhere('phone', 'like', "%{$search}%");
+        });
+      })
+      ->when($request->status, function ($query, $status) {
+        $query->where('status', $status);
+      })
+      ->when($request->sort, function ($query, $sort) {
+        [$column, $direction] = explode(',', $sort);
+        $query->orderBy($column, $direction);
+      }, function ($query) {
+        $query->orderBy('created_at', 'desc');
+      });
 
     return Inertia::render('Clients/Index', [
-      'clients' => $clients,
+      'clients' => $query->paginate(10)->withQueryString(),
+      'filters' => $request->only(['search', 'status', 'sort']),
+      'statistics' => $statistics,
+      'sortOptions' => [
+        ['value' => 'name,asc', 'label' => 'Name (A-Z)'],
+        ['value' => 'name,desc', 'label' => 'Name (Z-A)'],
+        ['value' => 'created_at,desc', 'label' => 'Newest First'],
+        ['value' => 'created_at,asc', 'label' => 'Oldest First'],
+      ],
+      'statusOptions' => [
+        ['value' => 'active', 'label' => 'Active'],
+        ['value' => 'inactive', 'label' => 'Inactive'],
+      ],
     ]);
   }
 
@@ -85,5 +144,43 @@ class ClientController extends Controller
 
     return redirect()->route('clients.index')
       ->with('message', 'Client deleted successfully');
+  }
+
+  public function restore($id)
+  {
+    $client = Client::onlyTrashed()->findOrFail($id);
+    $client->restore();
+
+    return redirect()->back()
+      ->with('message', 'Client restored successfully');
+  }
+
+  public function forceDelete($id)
+  {
+    $client = Client::onlyTrashed()->findOrFail($id);
+    $client->forceDelete();
+
+    return redirect()->back()
+      ->with('message', 'Client permanently deleted');
+  }
+
+  public function trashed()
+  {
+    $trashedClients = Client::onlyTrashed()
+      ->when(request('search'), function ($query, $search) {
+        $query->where(function ($query) use ($search) {
+          $query->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('company_name', 'like', "%{$search}%");
+        });
+      })
+      ->latest('deleted_at')
+      ->paginate(10)
+      ->withQueryString();
+
+    return Inertia::render('Clients/Trashed', [
+      'clients' => $trashedClients,
+      'filters' => request()->only(['search']),
+    ]);
   }
 }

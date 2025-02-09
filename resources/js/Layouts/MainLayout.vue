@@ -110,8 +110,7 @@ onUnmounted(() => {
         isScrolled
           ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
           : 'bg-background'
-      ]"
-    >
+      ]">
       <div class="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <!-- Logo -->
         <Link
@@ -206,8 +205,7 @@ onUnmounted(() => {
         'px-4': isMobile,
         'px-6': isTablet,
         'px-8': isDesktop
-      }"
-    >
+      }">
       <slot/>
     </main>
 
@@ -219,8 +217,7 @@ onUnmounted(() => {
           'px-4': isMobile,
           'px-6': isTablet,
           'px-8': isDesktop
-        }"
-      >
+        }">
         <p class="text-sm text-muted-foreground">
           Built with ❤️ by {{ page.props.app.name }}
         </p>

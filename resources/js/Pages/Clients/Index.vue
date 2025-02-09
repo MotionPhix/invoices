@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Head, Link} from '@inertiajs/vue3'
+import {Head, Link, router} from '@inertiajs/vue3'
 import {useBreakpoints} from '@vueuse/core'
 import {
   Table,
@@ -26,12 +26,13 @@ import {
 import EmptyState from '@/Components/EmptyState.vue'
 import MainLayout from "@/Layouts/MainLayout.vue";
 import {emptyStates} from "@/Config/EmptyState"
+import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
 
 const props = defineProps({
-  clients: {
-    type: Object,
-    required: true
-  }
+  clients: Object,
+  filters: Object,
+  sortOptions: Array,
+  statusOptions: Array,
 })
 
 const breakpoints = useBreakpoints({
@@ -65,17 +66,32 @@ const headers = [
             Manage your client relationships and information
           </p>
         </div>
-        <Link
-          v-if="clients.data.length > 0"
-          :href="route('clients.create')"
-          class="inline-flex items-center justify-center md:justify-start">
-          <Button>
-            <IconPlus class="mr-2 h-4 w-4"/>
+
+        <div class="mt-4 sm:mt-0 flex items-center gap-4">
+          <Button
+            v-if="clients.data.length > 0"
+            @click="router.get(route('clients.create'), {}, { replace: true })">
+            <IconPlus class="h-4 w-4"/>
             Add Client
           </Button>
-        </Link>
+
+          <Button
+            variant="outline"
+            @click="router.get(route('clients.trashed'), {}, { replace: true })"
+            class="gap-2">
+            <IconTrash class="h-4 w-4"/>
+            Trashed
+          </Button>
+        </div>
       </div>
     </template>
+
+    <!-- Filters -->
+    <FilterBar
+      :filters="filters"
+      :sort-options="sortOptions"
+      :status-options="statusOptions"
+    />
 
     <Card v-if="clients.data.length === 0">
       <CardContent class="p-0">
@@ -149,7 +165,7 @@ const headers = [
       <div class="grid grid-cols-1 gap-4 md:hidden">
         <Card
           v-for="client in clients.data"
-          :key="client.id" >
+          :key="client.id">
           <CardContent class="p-6">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-semibold">{{ client.name }}</h3>
