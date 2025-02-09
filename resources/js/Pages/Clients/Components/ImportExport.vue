@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import { router } from '@inertiajs/vue3'
 import {
   Dialog,
@@ -25,16 +25,21 @@ import {
   IconDownload,
   IconFile,
   IconX,
+  IconChecks,
+  IconFileImport,
   IconFileDownload,
   IconChevronDown
 } from '@tabler/icons-vue'
 import { useToast } from '@/Components/ui/toast/use-toast'
 
-const props = defineProps({
-  filters: {
-    type: Object,
-    default: () => ({})
-  }
+interface Props {
+  filters: Record<string, any>
+  selected: number[] // Array of selected client IDs
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  filters: () => ({}),
+  selected: () => []
 })
 
 const { toast } = useToast()
@@ -80,13 +85,23 @@ const handleImport = async () => {
   }
 }
 
-const handleExport = (filtered = false) => {
+const handleExport = (type: 'all' | 'filtered' | 'selected') => {
   const url = new URL(route('clients.export'))
 
-  if (filtered && props.filters) {
-    Object.entries(props.filters).forEach(([key, value]) => {
-      if (value) url.searchParams.append(key, value as string)
-    })
+  switch (type) {
+    case 'filtered':
+      if (props.filters) {
+        Object.entries(props.filters).forEach(([key, value]) => {
+          if (value) url.searchParams.append(key, value as string)
+        })
+      }
+      break
+    case 'selected':
+      if (props.selected.length > 0) {
+        url.searchParams.append('selected', props.selected.join(','))
+      }
+      break
+    // 'all' doesn't need any parameters
   }
 
   window.location.href = url.toString()
@@ -95,10 +110,21 @@ const handleExport = (filtered = false) => {
 const downloadSample = () => {
   window.location.href = route('clients.sample')
 }
+
+const hasSelection = computed(() => props.selected.length > 0)
+const hasFilters = computed(() => Object.values(props.filters).some(value => value))
 </script>
 
 <template>
   <div class="flex items-center gap-2">
+    <Button
+      variant="outline"
+      class="gap-2"
+      @click="downloadSample">
+      <IconFileImport class="h-4 w-4" />
+      Sample File
+    </Button>
+
     <!-- Export Dropdown -->
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -110,15 +136,27 @@ const downloadSample = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" class="w-56">
         <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
-          <DropdownMenuItem @click="handleExport(false)">
+
+          <DropdownMenuItem @click="handleExport('all')">
             <IconFileDownload class="mr-2 h-4 w-4" />
             <span>Export All Clients</span>
           </DropdownMenuItem>
-          <DropdownMenuItem @click="handleExport(true)">
+
+          <DropdownMenuItem @click="handleExport('filtered')">
             <IconFileDownload class="mr-2 h-4 w-4" />
             <span>Export Filtered Clients</span>
+          </DropdownMenuItem>
+
+
+          <DropdownMenuItem
+            @click="handleExport('selected')"
+            :disabled="!hasSelection">
+            <IconChecks class="mr-2 h-4 w-4" />
+            <span>Export Selected ({{ selected.length }})</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

@@ -88,7 +88,10 @@ const hasActiveFilters = computed(() => {
         v-model="status"
         @update:model-value="updateFilters({ status: $event })">
         <SelectTrigger>
-          <SelectValue class="w-[180px]" placeholder="Filter by status"/>
+          <SelectValue
+            class="w-[180px]"
+            placeholder="Filter by status"
+          />
         </SelectTrigger>
 
         <SelectContent>
@@ -107,7 +110,10 @@ const hasActiveFilters = computed(() => {
         v-model="sort"
         @update:model-value="updateFilters({ sort: $event })">
         <SelectTrigger>
-          <SelectValue class="w-[180px]" placeholder="Sort by"/>
+          <SelectValue
+            class="w-[180px]"
+            placeholder="Sort by"
+          />
         </SelectTrigger>
 
         <SelectContent>

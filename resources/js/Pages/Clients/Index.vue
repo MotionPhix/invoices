@@ -29,6 +29,8 @@ import {emptyStates} from "@/Config/EmptyState"
 import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
 import Statistics from "@/Pages/Clients/Components/Statistics.vue";
 import ImportExport from "@/Pages/Clients/Components/ImportExport.vue";
+import {Checkbox} from "@/Components/ui/checkbox";
+import {ref} from "vue";
 
 const props = defineProps({
   clients: Object,
@@ -44,7 +46,7 @@ const breakpoints = useBreakpoints({
   desktop: 1024,
 })
 
-const isMobile = breakpoints.smaller('tablet')
+const selectedClients = ref([])
 
 const headers = [
   {text: 'Name', value: 'name'},
@@ -53,6 +55,23 @@ const headers = [
   {text: 'Company', value: 'company_name'},
   {text: 'Actions', value: 'actions'},
 ]
+
+const toggleSelection = (clientId) => {
+  const index = selectedClients.value.indexOf(clientId)
+  if (index === -1) {
+    selectedClients.value.push(clientId)
+  } else {
+    selectedClients.value.splice(index, 1)
+  }
+}
+
+const selectAll = () => {
+  if (selectedClients.value.length === clients.data.length) {
+    selectedClients.value = []
+  } else {
+    selectedClients.value = clients.data.map(client => client.id)
+  }
+}
 </script>
 
 <template>
@@ -65,13 +84,18 @@ const headers = [
           <h2 class="text-xl font-semibold leading-tight text-foreground">
             Clients
           </h2>
+
           <p class="text-sm text-muted-foreground">
             Manage your client relationships and information
           </p>
         </div>
 
         <div class="mt-4 sm:mt-0 flex items-center gap-4">
-          <ImportExport :filters="filters" />
+
+          <ImportExport
+            :filters="filters"
+            :selected="selectedClients"
+          />
 
           <Button
             v-if="clients.data.length > 0"
@@ -121,11 +145,18 @@ const headers = [
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead class="w-12">
+                    <Checkbox
+                      :checked="selectedClients.length === clients.data.length"
+                      :indeterminate="selectedClients.length > 0 && selectedClients.length < clients.data.length"
+                      @update:checked="selectAll"
+                    />
+                  </TableHead>
+
                   <TableHead
                     v-for="header in headers"
                     :key="header.value"
-                    :class="{'text-right': header.value === 'actions'}"
-                  >
+                    :class="{'text-right': header.value === 'actions'}">
                     {{ header.text }}
                   </TableHead>
                 </TableRow>
@@ -133,8 +164,13 @@ const headers = [
               <TableBody>
                 <TableRow
                   v-for="client in clients.data"
-                  :key="client.id"
-                >
+                  :key="client.id" >
+                  <TableCell>
+                    <Checkbox
+                      :checked="selectedClients.includes(client.id)"
+                      @update:checked="toggleSelection(client.id)"
+                    />
+                  </TableCell>
                   <TableCell class="font-medium">{{ client.name }}</TableCell>
                   <TableCell>{{ client.email }}</TableCell>
                   <TableCell>{{ client.phone }}</TableCell>
@@ -144,8 +180,7 @@ const headers = [
                       <Button
                         variant="ghost"
                         size="icon"
-                        :href="route('clients.edit', client.id)"
-                      >
+                        :href="route('clients.edit', client.id)">
                         <IconPencil class="h-4 w-4"/>
                         <span class="sr-only">Edit client</span>
                       </Button>
@@ -157,8 +192,7 @@ const headers = [
                         method="delete"
                         as="button"
                         class="text-destructive hover:text-destructive"
-                        preserve-scroll
-                      >
+                        preserve-scroll>
                         <IconTrash class="h-4 w-4"/>
                         <span class="sr-only">Delete client</span>
                       </Button>
@@ -183,8 +217,7 @@ const headers = [
                 <Button
                   variant="ghost"
                   size="icon"
-                  :href="route('clients.edit', client.id)"
-                >
+                  :href="route('clients.edit', client.id)">
                   <IconPencil class="h-4 w-4"/>
                 </Button>
 
@@ -195,8 +228,7 @@ const headers = [
                   method="delete"
                   as="button"
                   class="text-destructive hover:text-destructive"
-                  preserve-scroll
-                >
+                  preserve-scroll>
                   <IconTrash class="h-4 w-4"/>
                 </Button>
               </div>
