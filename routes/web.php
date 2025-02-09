@@ -26,11 +26,6 @@ Route::middleware([
     return Inertia::render('Dashboard');
   })->name('dashboard');
 
-  Route::resource(
-    'clients',
-    \App\Http\Controllers\ClientController::class
-  );
-
   Route::get('trashed-clients', [ClientController::class, 'trashed'])->name('clients.trashed');
   Route::put('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
   Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.force-delete');
@@ -41,5 +36,10 @@ Route::middleware([
   Route::get('clients/sample', [ClientImportExportController::class, 'getSampleFile'])->name('clients.sample');
   Route::post('clients/import', [ClientImportExportController::class, 'import'])->name('clients.import');
   Route::get('clients/export', [ClientImportExportController::class, 'export'])->name('clients.export');
+
+  Route::resource(
+    'clients',
+    \App\Http\Controllers\ClientController::class
+  );
 
 });

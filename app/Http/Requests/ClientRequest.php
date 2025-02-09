@@ -47,7 +47,7 @@ class ClientRequest extends FormRequest
 
       'notes' => ['nullable', 'string'],
       'currency' => ['required', 'string', 'size:3'],
-      'status' => ['required', Rule::in(['active', 'inactive'])],
+      // 'status' => ['required', Rule::in(['active', 'inactive'])],
     ];
   }
 

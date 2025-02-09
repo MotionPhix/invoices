@@ -40,12 +40,6 @@ const props = defineProps({
   statistics: Object
 })
 
-const breakpoints = useBreakpoints({
-  mobile: 640,
-  tablet: 768,
-  desktop: 1024,
-})
-
 const selectedClients = ref([])
 
 const headers = [
@@ -66,10 +60,10 @@ const toggleSelection = (clientId) => {
 }
 
 const selectAll = () => {
-  if (selectedClients.value.length === clients.data.length) {
+  if (selectedClients.value.length === props.clients.data.length) {
     selectedClients.value = []
   } else {
-    selectedClients.value = clients.data.map(client => client.id)
+    selectedClients.value = props.clients.data.map(client => client.id)
   }
 }
 </script>

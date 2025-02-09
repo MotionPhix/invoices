@@ -200,7 +200,7 @@ onUnmounted(() => {
 
     <!-- Main Content -->
     <main
-      class="container py-6"
+      class="container py-6 max-w-4xl"
       :class="{
         'px-4': isMobile,
         'px-6': isTablet,
@@ -210,7 +210,7 @@ onUnmounted(() => {
     </main>
 
     <!-- Footer -->
-    <footer class="border-t py-6 md:py-0">
+    <footer class="border-t py-6 md:py-0 max-w-4xl mx-auto">
       <div
         class="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row"
         :class="{

@@ -108,6 +108,34 @@ class ClientController extends Controller
       ->with('message', 'Client created successfully');
   }
 
+  public function show(Client $client)
+  {
+    return inertia('Clients/Show', [
+      'client' => $client->load('user'),
+      'activities' => $client->activities()
+        ->with('causer')
+        ->latest()
+        ->take(20)
+        ->get()
+        ->map(function ($activity) {
+          return [
+            'id' => $activity->id,
+            'description' => $activity->description,
+            'causer_name' => $activity->causer->name ?? 'System',
+            'created_at' => $activity->created_at->diffForHumans(),
+          ];
+        }),
+      'invoices' => $client->invoices()
+        ->latest()
+        ->take(10)
+        ->get(),
+      'documents' => $client->documents()
+        ->latest()
+        ->take(10)
+        ->get(),
+    ]);
+  }
+
   public function edit(Client $client)
   {
     return Inertia::render('Clients/Edit', [
