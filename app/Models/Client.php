@@ -17,13 +17,27 @@ class Client extends Model
     'company_name',
     'vat_number',
     'billing_address',
+    'billing_city',
+    'billing_state',
+    'billing_postal_code',
+    'billing_country',
+    'use_billing_for_shipping',
     'shipping_address',
-    'country',
-    'city',
-    'postal_code',
+    'shipping_city',
+    'shipping_state',
+    'shipping_postal_code',
+    'shipping_country',
+    'user_id',
     'notes',
     'currency',
     'status',
+  ];
+
+  protected $casts = [
+    'use_billing_for_shipping' => 'boolean',
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
+    'deleted_at' => 'datetime',
   ];
 
   public function invoices()
@@ -31,9 +45,35 @@ class Client extends Model
     return $this->hasMany(Invoice::class);
   }
 
-  protected $casts = [
-    'created_at' => 'datetime',
-    'updated_at' => 'datetime',
-    'deleted_at' => 'datetime',
-  ];
+  public function user()
+  {
+    return $this->belongsTo(User::class);
+  }
+
+  // Accessors & Mutators
+  protected function getFullAddressAttribute()
+  {
+    return implode(', ', array_filter([
+      $this->billing_address,
+      $this->billing_city,
+      $this->billing_state,
+      $this->billing_postal_code,
+      $this->billing_country,
+    ]));
+  }
+
+  protected function getFullShippingAddressAttribute()
+  {
+    if ($this->use_billing_for_shipping) {
+      return $this->full_address;
+    }
+
+    return implode(', ', array_filter([
+      $this->shipping_address,
+      $this->shipping_city,
+      $this->shipping_state,
+      $this->shipping_postal_code,
+      $this->shipping_country,
+    ]));
+  }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClientRequest;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,7 +26,7 @@ class ClientController extends Controller
     return Inertia::render('Clients/Create');
   }
 
-  public function store(Request $request)
+  public function store(ClientRequest $request)
   {
     $validated = $request->validate([
       'name' => 'required|string|max:255',

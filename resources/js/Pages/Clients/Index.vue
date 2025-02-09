@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import {Head, Link} from '@inertiajs/vue3'
+import {useBreakpoints} from '@vueuse/core'
 import {
   Table,
   TableBody,
@@ -9,91 +9,195 @@ import {
   TableHeader,
   TableRow
 } from '@/Components/ui/table'
-import { Button } from '@/Components/ui/button'
+import {Button} from '@/Components/ui/button'
+import {
+  Card,
+  CardContent,
+} from '@/Components/ui/card'
 import {
   IconPlus,
   IconPencil,
-  IconTrash
+  IconTrash,
+  IconMail,
+  IconPhone,
+  IconBuilding,
+  IconUsers
 } from '@tabler/icons-vue'
+import EmptyState from '@/Components/EmptyState.vue'
+import MainLayout from "@/Layouts/MainLayout.vue";
+import {emptyStates} from "@/Config/EmptyState"
 
-defineProps({
+const props = defineProps({
   clients: {
     type: Object,
     required: true
   }
 })
 
+const breakpoints = useBreakpoints({
+  mobile: 640,
+  tablet: 768,
+  desktop: 1024,
+})
+
+const isMobile = breakpoints.smaller('tablet')
+
 const headers = [
-  { text: 'Name', value: 'name' },
-  { text: 'Email', value: 'email' },
-  { text: 'Phone', value: 'phone' },
-  { text: 'Company', value: 'company_name' },
-  { text: 'Actions', value: 'actions' },
+  {text: 'Name', value: 'name'},
+  {text: 'Email', value: 'email'},
+  {text: 'Phone', value: 'phone'},
+  {text: 'Company', value: 'company_name'},
+  {text: 'Actions', value: 'actions'},
 ]
 </script>
 
 <template>
-  <Head title="Clients" />
+  <Head title="Clients"/>
 
-  <div class="container mx-auto py-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-semibold text-gray-900">Clients</h1>
+  <MainLayout>
+    <template #header>
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="text-xl font-semibold leading-tight text-foreground">
+            Clients
+          </h2>
+          <p class="text-sm text-muted-foreground">
+            Manage your client relationships and information
+          </p>
+        </div>
+        <Link
+          v-if="clients.data.length > 0"
+          :href="route('clients.create')"
+          class="inline-flex items-center justify-center md:justify-start">
+          <Button>
+            <IconPlus class="mr-2 h-4 w-4"/>
+            Add Client
+          </Button>
+        </Link>
+      </div>
+    </template>
 
-      <Link
-        :href="route('clients.create')"
-        class="inline-flex items-center"
-      >
-        <Button>
-          <IconPlus class="mr-2 h-4 w-4" />
-          Add Client
-        </Button>
-      </Link>
-    </div>
+    <Card v-if="clients.data.length === 0">
+      <CardContent class="p-0">
+        <EmptyState
+          v-bind="emptyStates.clients"
+          :create-route="route('clients.create')"
+          create-label="Add Your First Client"
+        />
+      </CardContent>
+    </Card>
 
-    <div class="bg-white rounded-lg shadow">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead
-              v-for="header in headers"
-              :key="header.value"
-            >
-              {{ header.text }}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow
-            v-for="client in clients.data"
-            :key="client.id"
-          >
-            <TableCell>{{ client.name }}</TableCell>
-            <TableCell>{{ client.email }}</TableCell>
-            <TableCell>{{ client.phone }}</TableCell>
-            <TableCell>{{ client.company_name }}</TableCell>
-            <TableCell>
-              <div class="flex items-center space-x-2">
-                <Link
-                  :href="route('clients.edit', client.id)"
-                  class="text-blue-600 hover:text-blue-800"
+    <div v-else>
+      <!-- Desktop Table View -->
+      <div class="hidden md:block">
+        <Card>
+          <CardContent class="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    v-for="header in headers"
+                    :key="header.value"
+                    :class="{'text-right': header.value === 'actions'}"
+                  >
+                    {{ header.text }}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow
+                  v-for="client in clients.data"
+                  :key="client.id"
                 >
-                  <IconPencil class="h-5 w-5" />
-                </Link>
+                  <TableCell class="font-medium">{{ client.name }}</TableCell>
+                  <TableCell>{{ client.email }}</TableCell>
+                  <TableCell>{{ client.phone }}</TableCell>
+                  <TableCell>{{ client.company_name }}</TableCell>
+                  <TableCell class="text-right">
+                    <div class="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        :href="route('clients.edit', client.id)"
+                      >
+                        <IconPencil class="h-4 w-4"/>
+                        <span class="sr-only">Edit client</span>
+                      </Button>
 
-                <Link
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        :href="route('clients.destroy', client.id)"
+                        method="delete"
+                        as="button"
+                        class="text-destructive hover:text-destructive"
+                        preserve-scroll
+                      >
+                        <IconTrash class="h-4 w-4"/>
+                        <span class="sr-only">Delete client</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="grid grid-cols-1 gap-4 md:hidden">
+        <Card
+          v-for="client in clients.data"
+          :key="client.id" >
+          <CardContent class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold">{{ client.name }}</h3>
+              <div class="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  :href="route('clients.edit', client.id)"
+                >
+                  <IconPencil class="h-4 w-4"/>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
                   :href="route('clients.destroy', client.id)"
                   method="delete"
                   as="button"
-                  class="text-red-600 hover:text-red-800"
+                  class="text-destructive hover:text-destructive"
                   preserve-scroll
                 >
-                  <IconTrash class="h-5 w-5" />
-                </Link>
+                  <IconTrash class="h-4 w-4"/>
+                </Button>
               </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex items-center text-sm">
+                <IconMail class="mr-2 h-4 w-4 text-muted-foreground"/>
+                {{ client.email }}
+              </div>
+              <div class="flex items-center text-sm">
+                <IconPhone class="mr-2 h-4 w-4 text-muted-foreground"/>
+                {{ client.phone }}
+              </div>
+              <div class="flex items-center text-sm">
+                <IconBuilding class="mr-2 h-4 w-4 text-muted-foreground"/>
+                {{ client.company_name }}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  </div>
+
+    <!-- Pagination -->
+    <div v-if="clients.data.length > 0" class="mt-6">
+      <!-- Add pagination component here -->
+    </div>
+  </MainLayout>
 </template>
