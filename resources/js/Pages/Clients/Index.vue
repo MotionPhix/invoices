@@ -27,12 +27,14 @@ import EmptyState from '@/Components/EmptyState.vue'
 import MainLayout from "@/Layouts/MainLayout.vue";
 import {emptyStates} from "@/Config/EmptyState"
 import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
+import Statistics from "@/Pages/Clients/Components/Statistics.vue";
 
 const props = defineProps({
   clients: Object,
   filters: Object,
   sortOptions: Array,
   statusOptions: Array,
+  statistics: Object
 })
 
 const breakpoints = useBreakpoints({
@@ -85,6 +87,11 @@ const headers = [
         </div>
       </div>
     </template>
+
+    <Statistics
+      v-if="clients.data.length > 0"
+      :statistics="statistics"
+    />
 
     <!-- Filters -->
     <FilterBar
