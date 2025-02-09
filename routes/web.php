@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Client\ClientActivityController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientImportExportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,5 +36,7 @@ Route::middleware([
   Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.force-delete');
   Route::get('clients/{client}/activity', [ClientActivityController::class, 'index'])
     ->name('clients.activity');
+  Route::post('clients/import', [ClientImportExportController::class, 'import'])->name('clients.import');
+  Route::get('clients/export', [ClientImportExportController::class, 'export'])->name('clients.export');
 
 });

@@ -28,6 +28,7 @@ import MainLayout from "@/Layouts/MainLayout.vue";
 import {emptyStates} from "@/Config/EmptyState"
 import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
 import Statistics from "@/Pages/Clients/Components/Statistics.vue";
+import ImportExport from "@/Pages/Clients/Components/ImportExport.vue";
 
 const props = defineProps({
   clients: Object,
@@ -70,6 +71,8 @@ const headers = [
         </div>
 
         <div class="mt-4 sm:mt-0 flex items-center gap-4">
+          <ImportExport />
+
           <Button
             v-if="clients.data.length > 0"
             @click="router.get(route('clients.create'), {}, { replace: true })">
