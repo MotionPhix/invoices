@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use League\Csv\Reader;
@@ -11,33 +12,61 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ClientImportExportController extends Controller
 {
-  public function export(): StreamedResponse
+  private array $csvHeaders = [
+    'Name',
+    'Email',
+    'Phone',
+    'Company Name',
+    'VAT Number',
+    'Billing Address',
+    'Shipping Address',
+    'Country',
+    'City',
+    'Postal Code',
+    'Status',
+    'Currency'
+  ];
+
+  public function export(Request $request): StreamedResponse
   {
-    $clients = Client::all();
+    // Start with base query
+    $query = Client::query();
+
+    // Apply filters from request
+    if ($request->has('search')) {
+      $search = $request->get('search');
+      $query->where(function($q) use ($search) {
+        $q->where('name', 'like', "%{$search}%")
+          ->orWhere('email', 'like', "%{$search}%")
+          ->orWhere('company_name', 'like', "%{$search}%")
+          ->orWhere('phone', 'like', "%{$search}%");
+      });
+    }
+
+    if ($request->has('status')) {
+      $query->where('status', $request->get('status'));
+    }
+
+    if ($request->has('sort')) {
+      [$column, $direction] = explode(',', $request->get('sort'));
+      $query->orderBy($column, $direction);
+    }
+
+    $clients = $query->get();
 
     $headers = [
       'Content-Type' => 'text/csv',
       'Content-Disposition' => 'attachment; filename="clients-'.date('Y-m-d').'.csv"',
+      'Pragma' => 'no-cache',
+      'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+      'Expires' => '0'
     ];
 
     $callback = function() use ($clients) {
       $handle = fopen('php://output', 'w');
 
       // Add headers
-      fputcsv($handle, [
-        'Name',
-        'Email',
-        'Phone',
-        'Company Name',
-        'VAT Number',
-        'Billing Address',
-        'Shipping Address',
-        'Country',
-        'City',
-        'Postal Code',
-        'Status',
-        'Currency'
-      ]);
+      fputcsv($handle, $this->csvHeaders);
 
       // Add data
       foreach ($clients as $client) {
@@ -56,6 +85,44 @@ class ClientImportExportController extends Controller
           $client->currency
         ]);
       }
+
+      fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+  }
+
+  public function getSampleFile(): StreamedResponse
+  {
+    $headers = [
+      'Content-Type' => 'text/csv',
+      'Content-Disposition' => 'attachment; filename="clients-sample.csv"',
+      'Pragma' => 'no-cache',
+      'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+      'Expires' => '0'
+    ];
+
+    $callback = function() {
+      $handle = fopen('php://output', 'w');
+
+      // Add headers
+      fputcsv($handle, $this->csvHeaders);
+
+      // Add sample data
+      fputcsv($handle, [
+        'John Doe',
+        'john@example.com',
+        '+1234567890',
+        'Sample Company Ltd',
+        'VAT123456',
+        '123 Billing St',
+        '456 Shipping Ave',
+        'United States',
+        'New York',
+        '10001',
+        'active',
+        'USD'
+      ]);
 
       fclose($handle);
     };

@@ -71,7 +71,7 @@ const headers = [
         </div>
 
         <div class="mt-4 sm:mt-0 flex items-center gap-4">
-          <ImportExport />
+          <ImportExport :filters="filters" />
 
           <Button
             v-if="clients.data.length > 0"

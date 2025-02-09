@@ -10,9 +10,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/Components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/Components/ui/dropdown-menu'
 import { Button } from '@/Components/ui/button'
-import { IconUpload, IconDownload, IconFile, IconX } from '@tabler/icons-vue'
+import {
+  IconUpload,
+  IconDownload,
+  IconFile,
+  IconX,
+  IconFileDownload,
+  IconChevronDown
+} from '@tabler/icons-vue'
 import { useToast } from '@/Components/ui/toast/use-toast'
+
+const props = defineProps({
+  filters: {
+    type: Object,
+    default: () => ({})
+  }
+})
 
 const { toast } = useToast()
 const importDialog = ref(false)
@@ -35,7 +58,7 @@ const handleImport = async () => {
   formData.append('file', selectedFile.value)
 
   try {
-    const response = await router.post(route('clients.import'), formData, {
+    await router.post(route('clients.import'), formData, {
       onSuccess: () => {
         importDialog.value = false
         selectedFile.value = null
@@ -57,22 +80,49 @@ const handleImport = async () => {
   }
 }
 
-const handleExport = () => {
-  window.location.href = route('clients.export')
+const handleExport = (filtered = false) => {
+  const url = new URL(route('clients.export'))
+
+  if (filtered && props.filters) {
+    Object.entries(props.filters).forEach(([key, value]) => {
+      if (value) url.searchParams.append(key, value as string)
+    })
+  }
+
+  window.location.href = url.toString()
+}
+
+const downloadSample = () => {
+  window.location.href = route('clients.sample')
 }
 </script>
 
 <template>
   <div class="flex items-center gap-2">
-    <!-- Export Button -->
-    <Button
-      variant="outline"
-      @click="handleExport"
-      class="gap-2"
-    >
-      <IconDownload class="h-4 w-4" />
-      Export
-    </Button>
+    <!-- Export Dropdown -->
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" class="gap-2">
+          <IconDownload class="h-4 w-4" />
+          Export
+          <IconChevronDown class="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" class="w-56">
+        <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem @click="handleExport(false)">
+            <IconFileDownload class="mr-2 h-4 w-4" />
+            <span>Export All Clients</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="handleExport(true)">
+            <IconFileDownload class="mr-2 h-4 w-4" />
+            <span>Export Filtered Clients</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
 
     <!-- Import Dialog -->
     <Dialog v-model:open="importDialog">
@@ -87,11 +137,20 @@ const handleExport = () => {
         <DialogHeader>
           <DialogTitle>Import Clients</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to import clients. Download our template to see the required format.
+            Upload a CSV file to import clients. Make sure your file follows the required format.
           </DialogDescription>
         </DialogHeader>
 
         <div class="grid gap-4 py-4">
+          <Button
+            variant="outline"
+            class="w-full gap-2"
+            @click="downloadSample"
+          >
+            <IconFileDownload class="h-4 w-4" />
+            Download Sample File
+          </Button>
+
           <div class="grid w-full items-center gap-1.5">
             <label
               for="file"
@@ -142,12 +201,14 @@ const handleExport = () => {
         <DialogFooter>
           <Button
             variant="outline"
-            @click="importDialog = false">
+            @click="importDialog = false"
+          >
             Cancel
           </Button>
           <Button
             :disabled="!selectedFile || uploading"
-            @click="handleImport">
+            @click="handleImport"
+          >
             {{ uploading ? 'Importing...' : 'Import' }}
           </Button>
         </DialogFooter>
