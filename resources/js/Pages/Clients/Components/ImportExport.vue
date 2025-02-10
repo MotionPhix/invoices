@@ -25,6 +25,9 @@ import {
   IconDownload,
   IconFile,
   IconX,
+  IconFileText,
+  IconFileSpreadsheet,
+  IconFileTypePdf,
   IconChecks,
   IconFileImport,
   IconFileDownload,
@@ -135,6 +138,7 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
           <IconChevronDown class="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" class="w-56">
         <DropdownMenuLabel>Export Options</DropdownMenuLabel>
 
@@ -161,6 +165,36 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" class="gap-2">
+            <IconDownload class="h-4 w-4" />
+            Export
+            <IconChevronDown class="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-56">
+          <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem @click="handleExport('csv')">
+              <IconFileText class="mr-2 h-4 w-4" />
+              <span>Export as CSV</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem @click="handleExport('excel')">
+              <IconFileSpreadsheet class="mr-2 h-4 w-4" />
+              <span>Export as Excel</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem @click="handleExport('pdf')">
+              <IconFileTypePdf class="mr-2 h-4 w-4" />
+              <span>Export as PDF</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </DropdownMenu>
 
     <!-- Import Dialog -->

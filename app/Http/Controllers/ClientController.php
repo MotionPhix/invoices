@@ -161,6 +161,66 @@ class ClientController extends Controller
       ->with('message', 'Client deleted successfully');
   }
 
+  public function bulkAction(Request $request)
+  {
+    $request->validate([
+      'action' => 'required|in:delete,status',
+      'selected' => 'required|array',
+      'selected.*' => 'exists:clients,id',
+      'value' => 'required_if:action,status|in:active,inactive'
+    ]);
+
+    $clients = Client::whereIn('id', $request->selected);
+
+    try {
+      DB::beginTransaction();
+
+      switch ($request->action) {
+        case 'delete':
+          // Store the client names for activity log
+          $clientNames = $clients->pluck('name')->toArray();
+
+          // Perform the delete
+          $clients->delete();
+
+          // Log the bulk delete action
+          activity()
+            ->withProperties([
+              'clients' => $clientNames,
+              'count' => count($request->selected)
+            ])
+            ->log('Bulk deleted clients');
+          break;
+
+        case 'status':
+          // Store the client names and new status for activity log
+          $clientNames = $clients->pluck('name')->toArray();
+
+          // Update the status
+          $clients->update(['status' => $request->value]);
+
+          // Log the bulk status update
+          activity()
+            ->withProperties([
+              'clients' => $clientNames,
+              'status' => $request->value,
+              'count' => count($request->selected)
+            ])
+            ->log('Bulk updated client status');
+          break;
+      }
+
+      DB::commit();
+
+      return back()->with([
+        'message' => 'Bulk action completed successfully'
+      ]);
+    } catch (\Exception $e) {
+      DB::rollBack();
+      throw $e;
+    }
+  }
+
   public function restore($id)
   {
     $client = Client::onlyTrashed()->findOrFail($id);

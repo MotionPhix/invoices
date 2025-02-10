@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyClientEmail;
 use App\Traits\BootUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +35,10 @@ class Client extends Model
     'notes',
     'currency',
     'status',
+
+    'email_verified_at',
+    'email_verification_token',
+    'email_verification_sent_at',
   ];
 
   protected $casts = [
@@ -41,6 +46,9 @@ class Client extends Model
     'created_at' => 'datetime',
     'updated_at' => 'datetime',
     'deleted_at' => 'datetime',
+
+    'email_verified_at' => 'datetime',
+    'email_verification_sent_at' => 'datetime',
   ];
 
   public function invoices()
@@ -63,6 +71,30 @@ class Client extends Model
       $this->billing_postal_code,
       $this->billing_country,
     ]));
+  }
+
+  // Add these new methods for email verification
+  public function hasVerifiedEmail()
+  {
+    return ! is_null($this->email_verified_at);
+  }
+
+  public function markEmailAsVerified()
+  {
+    return $this->forceFill([
+      'email_verified_at' => $this->freshTimestamp(),
+      'email_verification_token' => null,
+    ])->save();
+  }
+
+  public function sendEmailVerificationNotification()
+  {
+    $this->forceFill([
+      'email_verification_token' => Str::random(60),
+      'email_verification_sent_at' => $this->freshTimestamp(),
+    ])->save();
+
+    $this->notify(new VerifyClientEmail);
   }
 
   protected function getFullShippingAddressAttribute()

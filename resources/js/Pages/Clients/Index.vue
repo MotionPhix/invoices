@@ -31,6 +31,8 @@ import Statistics from "@/Pages/Clients/Components/Statistics.vue";
 import ImportExport from "@/Pages/Clients/Components/ImportExport.vue";
 import {Checkbox} from "@/Components/ui/checkbox";
 import {ref} from "vue";
+import BulkActions from "@/Pages/Clients/Components/BulkActions.vue";
+import VerificationStatus from "@/Pages/Clients/Components/VerificationStatus.vue";
 
 const props = defineProps({
   clients: Object,
@@ -44,10 +46,9 @@ const selectedClients = ref([])
 
 const headers = [
   {text: 'Name', value: 'name'},
-  {text: 'Email', value: 'email'},
   {text: 'Phone', value: 'phone'},
   {text: 'Company', value: 'company_name'},
-  {text: 'Actions', value: 'actions'},
+  {text: 'Status', value: 'actions'},
 ]
 
 const toggleSelection = (clientId) => {
@@ -85,6 +86,9 @@ const selectAll = () => {
         </div>
 
         <div class="mt-4 sm:mt-0 flex items-center gap-4">
+          <BulkActions
+            :selected="selectedClients"
+          />
 
           <ImportExport
             :filters="filters"
@@ -149,16 +153,16 @@ const selectAll = () => {
 
                   <TableHead
                     v-for="header in headers"
-                    :key="header.value"
-                    :class="{'text-right': header.value === 'actions'}">
+                    :key="header.value">
                     {{ header.text }}
                   </TableHead>
+
+                  <TableHead />
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 <TableRow
-                  @click="router.get(route('clients.show', client.id), {}, {replace: true})"
                   v-for="client in clients.data"
                   :key="client.id" >
                   <TableCell>
@@ -167,10 +171,38 @@ const selectAll = () => {
                       @update:checked="toggleSelection(client.id)"
                     />
                   </TableCell>
-                  <TableCell class="font-medium">{{ client.name }}</TableCell>
-                  <TableCell>{{ client.email }}</TableCell>
+
+                  <TableCell
+                    class="font-medium cursor-pointer"
+                    @click="router.get(route('clients.show', client.id), {}, {replace: true})">
+                    <h5 class="font-semibold dark:text-white">
+                      {{ client.name }}
+                    </h5>
+                    <p class="text-gray-500 dark:text-gray-400">
+                      {{ client.email }}
+                    </p>
+                  </TableCell>
+
                   <TableCell>{{ client.phone }}</TableCell>
+
                   <TableCell>{{ client.company_name }}</TableCell>
+
+                  <!-- Add to your table row -->
+                  <TableCell>
+                    <div class="flex items-center gap-2">
+                      <VerificationStatus :verified="client.email_verified_at !== null" />
+                      <Button
+                        v-if="!client.email_verified_at"
+                        variant="ghost"
+                        size="sm"
+                        @click="resendVerification(client)"
+                        :disabled="client.email_verification_sent_at && isRecentlySent(client.email_verification_sent_at)"
+                      >
+                        Resend
+                      </Button>
+                    </div>
+                  </TableCell>
+
                   <TableCell class="text-right">
                     <div class="flex items-center justify-end space-x-2">
                       <Button

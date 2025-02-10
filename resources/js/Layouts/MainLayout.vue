@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch} from 'vue'
 import {usePage, Head, Link} from '@inertiajs/vue3'
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/Components/ui/navigation-menu'
 import UserNav from '@/Components/UserNav.vue'
 import ApplicationMark from "@/Components/ApplicationMark.vue";
+import {Toaster} from "@/Components/ui/toast";
 
 const props = defineProps({
   title: String,
@@ -100,6 +101,8 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <Toaster />
+
   <div class="min-h-screen bg-background">
     <Head :title="title"/>
 

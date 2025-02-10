@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 
 Route::get('/', function () {
   return Inertia::render('Welcome', [
@@ -15,6 +16,17 @@ Route::get('/', function () {
     'phpVersion' => PHP_VERSION,
   ]);
 });
+
+Route::get('client/verify-email/{id}/{token}', [VerifyEmailController::class, 'verify'])
+  ->name('client.verify-email')
+  ->middleware('signed');
+
+Route::post('client/{client}/verify-email/resend', [VerifyEmailController::class, 'resend'])
+  ->name('client.verification.resend')
+  ->middleware('auth');
+
+Route::get('verification/success', [VerifyEmailController::class, 'success'])
+  ->name('verification.success');
 
 Route::middleware([
   'auth:sanctum',
@@ -33,9 +45,25 @@ Route::middleware([
     ->name('clients.activity');
 
   // Add this new route
-  Route::get('clients/sample', [ClientImportExportController::class, 'getSampleFile'])->name('clients.sample');
-  Route::post('clients/import', [ClientImportExportController::class, 'import'])->name('clients.import');
-  Route::get('clients/export', [ClientImportExportController::class, 'export'])->name('clients.export');
+  Route::get(
+    'clients/sample',
+    [ClientImportExportController::class, 'getSampleFile']
+  )->name('clients.sample');
+
+  Route::post(
+    'clients/import',
+    [ClientImportExportController::class, 'import']
+  )->name('clients.import');
+
+  Route::get(
+    'clients/export',
+    [ClientImportExportController::class, 'export']
+  )->name('clients.export');
+
+  Route::post(
+    'clients/bulk-action',
+    [ClientController::class, 'bulkAction']
+  )->name('clients.bulk-action');
 
   Route::resource(
     'clients',
