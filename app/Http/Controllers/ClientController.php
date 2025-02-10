@@ -36,9 +36,9 @@ class ClientController extends Controller
         'deleted' => $recentActivity['deleted'] ?? 0,
         'restored' => $recentActivity['restored'] ?? 0,
       ],
-      'top_countries' => Client::select('country', DB::raw('count(*) as count'))
-        ->whereNotNull('country')
-        ->groupBy('country')
+      'top_countries' => Client::select('billing_country', DB::raw('count(*) as count'))
+        ->whereNotNull('billing_country')
+        ->groupBy('billing_country')
         ->orderByDesc('count')
         ->limit(5)
         ->get(),

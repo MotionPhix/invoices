@@ -85,8 +85,9 @@ const handleImport = async () => {
   }
 }
 
-const handleExport = (type: 'all' | 'filtered' | 'selected') => {
+const handleExport = (type: 'all' | 'filtered' | 'selected', format: 'csv' | 'pdf' | 'excel') => {
   const url = new URL(route('clients.export'))
+  url.searchParams.append('format', format)
 
   switch (type) {
     case 'filtered':

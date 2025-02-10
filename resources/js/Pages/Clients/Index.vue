@@ -155,8 +155,10 @@ const selectAll = () => {
                   </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 <TableRow
+                  @click="router.get(route('clients.show', client.id), {}, {replace: true})"
                   v-for="client in clients.data"
                   :key="client.id" >
                   <TableCell>
@@ -203,6 +205,7 @@ const selectAll = () => {
       <div class="grid grid-cols-1 gap-4 md:hidden">
         <Card
           v-for="client in clients.data"
+          @click="router.get(route('clients.show', client.id))"
           :key="client.id">
           <CardContent class="p-6">
             <div class="flex items-center justify-between mb-4">

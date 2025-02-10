@@ -15,7 +15,7 @@ class ClientRequest extends FormRequest
 
   public function rules(): array
   {
-    return [
+    $rules = [
       'name' => ['required', 'string', 'max:255'],
       'email' => [
         'required',
@@ -47,8 +47,14 @@ class ClientRequest extends FormRequest
 
       'notes' => ['nullable', 'string'],
       'currency' => ['required', 'string', 'size:3'],
-      // 'status' => ['required', Rule::in(['active', 'inactive'])],
     ];
+
+    // Add status validation only for update requests
+    if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+      $rules['status'] = ['required', Rule::in(['active', 'inactive'])];
+    }
+
+    return $rules;
   }
 
   public function messages(): array
@@ -75,6 +81,9 @@ class ClientRequest extends FormRequest
 
       'currency.required' => 'Please select a currency.',
       'currency.size' => 'Currency code must be 3 characters long (e.g., MWK, USD).',
+
+      'status.required' => 'Please select a status.',
+      'status.in' => 'Status must be either active or inactive.',
     ];
   }
 
