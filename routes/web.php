@@ -71,3 +71,38 @@ Route::middleware([
   );
 
 });
+
+// Client Portal Routes
+Route::prefix('client-portal')->name('client-portal.')->group(function () {
+  // Guest routes
+  Route::middleware('guest:client')->group(function () {
+    Route::get('login', [\App\Http\Controllers\Client\ClientAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [\App\Http\Controllers\Client\ClientAuthController::class, 'sendLoginLink'])->name('login.send-link');
+    Route::get('login/{token}', [\App\Http\Controllers\Client\ClientAuthController::class, 'login'])->name('login.token');
+  });
+
+  // Authenticated routes
+  Route::middleware('auth:client')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('logout', [\App\Http\Controllers\Client\ClientAuthController::class, 'logout'])->name('logout');
+
+    // Profile routes
+    Route::get('profile', [\App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [\App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+
+    // Invoice routes
+    Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+
+    // Payment routes
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
+
+    // Support request routes
+    Route::resource('support-requests', SupportRequestController::class);
+
+    // Statements
+    Route::get('statements', [StatementController::class, 'index'])->name('statements.index');
+    Route::get('statements/download', [StatementController::class, 'download'])->name('statements.download');
+  });
+});

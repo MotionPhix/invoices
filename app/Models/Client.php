@@ -7,6 +7,7 @@ use App\Traits\BootUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -39,6 +40,8 @@ class Client extends Model
     'email_verified_at',
     'email_verification_token',
     'email_verification_sent_at',
+    'login_token',
+    'login_token_expires_at'
   ];
 
   protected $casts = [
@@ -49,6 +52,7 @@ class Client extends Model
 
     'email_verified_at' => 'datetime',
     'email_verification_sent_at' => 'datetime',
+    'login_token_expires_at' => 'datetime',
   ];
 
   public function invoices()
@@ -59,6 +63,30 @@ class Client extends Model
   public function user()
   {
     return $this->belongsTo(User::class);
+  }
+
+  public function payments()
+  {
+    return $this->hasMany(Payment::class);
+  }
+
+  public function supportRequests()
+  {
+    return $this->hasMany(SupportRequest::class);
+  }
+
+  public function generateLoginToken()
+  {
+    $this->login_token = Str::random(64);
+    $this->login_token_expires_at = now()->addHours(24);
+    $this->save();
+
+    return $this->login_token;
+  }
+
+  public function hasValidLoginToken()
+  {
+    return $this->login_token && $this->login_token_expires_at && $this->login_token_expires_at->isFuture();
   }
 
   // Accessors & Mutators

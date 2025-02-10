@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\LazyCollection;
 use League\Csv\Reader;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ClientImportExportController extends Controller
@@ -121,7 +122,10 @@ class ClientImportExportController extends Controller
 
   private function exportExcel($clients)
   {
-    return (new ClientExport($clients))->download('clients-'.date('Y-m-d').'.xlsx');
+    return Excel::download(
+      new ClientExport($clients),
+      'clients-'.date('Y-m-d').'.xlsx'
+    );
   }
 
   private function exportPdf($clients)

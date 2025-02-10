@@ -18,6 +18,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from '@/Components/ui/dropdown-menu'
 import { Button } from '@/Components/ui/button'
 import {
@@ -54,7 +57,26 @@ const errors = ref([])
 const handleFileSelect = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files?.length) {
-    selectedFile.value = input.files[0]
+    const file = input.files[0]
+    // Check file type
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload a CSV file',
+        variant: 'destructive',
+      })
+      return
+    }
+    // Check file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'File size should not exceed 2MB',
+        variant: 'destructive',
+      })
+      return
+    }
+    selectedFile.value = file
   }
 }
 
@@ -88,9 +110,13 @@ const handleImport = async () => {
   }
 }
 
-const handleExport = (type: 'all' | 'filtered' | 'selected', format: 'csv' | 'pdf' | 'excel') => {
+type ExportType = 'all' | 'filtered' | 'selected'
+type ExportFormat = 'csv' | 'excel' | 'pdf'
+
+const handleExport = (type: ExportType, format: ExportFormat) => {
   const url = new URL(route('clients.export'))
   url.searchParams.append('format', format)
+  url.searchParams.append('type', type)
 
   switch (type) {
     case 'filtered':
@@ -105,7 +131,6 @@ const handleExport = (type: 'all' | 'filtered' | 'selected', format: 'csv' | 'pd
         url.searchParams.append('selected', props.selected.join(','))
       }
       break
-    // 'all' doesn't need any parameters
   }
 
   window.location.href = url.toString()
@@ -117,6 +142,12 @@ const downloadSample = () => {
 
 const hasSelection = computed(() => props.selected.length > 0)
 const hasFilters = computed(() => Object.values(props.filters).some(value => value))
+
+const exportFormats = [
+  { label: 'CSV', value: 'csv', icon: IconFileText },
+  { label: 'Excel', value: 'excel', icon: IconFileSpreadsheet },
+  { label: 'PDF', value: 'pdf', icon: IconFileTypePdf }
+] as const
 </script>
 
 <template>
@@ -141,60 +172,61 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
 
       <DropdownMenuContent align="end" class="w-56">
         <DropdownMenuLabel>Export Options</DropdownMenuLabel>
-
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
+          <!-- All Clients -->
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <IconFileDownload class="mr-2 h-4 w-4" />
+              <span>Export All Clients</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem
+                v-for="format in exportFormats"
+                :key="format.value"
+                @click="handleExport('all', format.value)">
+                <component :is="format.icon" class="mr-2 h-4 w-4" />
+                <span>{{ format.label }}</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
 
-          <DropdownMenuItem @click="handleExport('all')">
-            <IconFileDownload class="mr-2 h-4 w-4" />
-            <span>Export All Clients</span>
-          </DropdownMenuItem>
+          <!-- Filtered Clients -->
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger :disabled="!hasFilters">
+              <IconFileDownload class="mr-2 h-4 w-4" />
+              <span>Export Filtered Clients</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem
+                v-for="format in exportFormats"
+                :key="format.value"
+                @click="handleExport('filtered', format.value)">
+                <component :is="format.icon" class="mr-2 h-4 w-4" />
+                <span>{{ format.label }}</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
 
-          <DropdownMenuItem @click="handleExport('filtered')">
-            <IconFileDownload class="mr-2 h-4 w-4" />
-            <span>Export Filtered Clients</span>
-          </DropdownMenuItem>
-
-
-          <DropdownMenuItem
-            @click="handleExport('selected')"
-            :disabled="!hasSelection">
-            <IconChecks class="mr-2 h-4 w-4" />
-            <span>Export Selected ({{ selected.length }})</span>
-          </DropdownMenuItem>
+          <!-- Selected Clients -->
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger :disabled="!hasSelection">
+              <IconChecks class="mr-2 h-4 w-4" />
+              <span>Export Selected ({{ selected.length }})</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem
+                v-for="format in exportFormats"
+                :key="format.value"
+                @click="handleExport('selected', format.value)">
+                <component :is="format.icon" class="mr-2 h-4 w-4" />
+                <span>{{ format.label }}</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuGroup>
       </DropdownMenuContent>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" class="gap-2">
-            <IconDownload class="h-4 w-4" />
-            Export
-            <IconChevronDown class="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-56">
-          <DropdownMenuLabel>Export Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem @click="handleExport('csv')">
-              <IconFileText class="mr-2 h-4 w-4" />
-              <span>Export as CSV</span>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem @click="handleExport('excel')">
-              <IconFileSpreadsheet class="mr-2 h-4 w-4" />
-              <span>Export as Excel</span>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem @click="handleExport('pdf')">
-              <IconFileTypePdf class="mr-2 h-4 w-4" />
-              <span>Export as PDF</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </DropdownMenu>
 
     <!-- Import Dialog -->
@@ -218,8 +250,7 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
           <Button
             variant="outline"
             class="w-full gap-2"
-            @click="downloadSample"
-          >
+            @click="downloadSample">
             <IconFileDownload class="h-4 w-4" />
             Download Sample File
           </Button>
@@ -262,8 +293,7 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
                 <Button
                   variant="ghost"
                   size="icon"
-                  @click.prevent="selectedFile = null"
-                >
+                  @click.prevent="selectedFile = null">
                   <IconX class="h-4 w-4" />
                 </Button>
               </div>
@@ -274,14 +304,12 @@ const hasFilters = computed(() => Object.values(props.filters).some(value => val
         <DialogFooter>
           <Button
             variant="outline"
-            @click="importDialog = false"
-          >
+            @click="importDialog = false" >
             Cancel
           </Button>
           <Button
             :disabled="!selectedFile || uploading"
-            @click="handleImport"
-          >
+            @click="handleImport" >
             {{ uploading ? 'Importing...' : 'Import' }}
           </Button>
         </DialogFooter>

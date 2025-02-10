@@ -5,8 +5,11 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class ClientExport implements FromCollection, WithHeadings, WithMapping
+class ClientExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
 {
   protected $clients;
 
@@ -23,7 +26,6 @@ class ClientExport implements FromCollection, WithHeadings, WithMapping
   public function headings(): array
   {
     return [
-      'UUID',
       'Name',
       'Email',
       'Phone',
@@ -68,6 +70,19 @@ class ClientExport implements FromCollection, WithHeadings, WithMapping
       $client->notes,
       $client->currency,
       $client->status
+    ];
+  }
+
+  public function styles(Worksheet $sheet)
+  {
+    return [
+      1 => [
+        'font' => ['bold' => true],
+        'fill' => [
+          'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+          'startColor' => ['rgb' => 'F3F4F6']
+        ]
+      ],
     ];
   }
 }
