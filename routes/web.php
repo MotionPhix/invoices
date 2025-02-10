@@ -76,37 +76,37 @@ Route::middleware([
 Route::prefix('client-portal')->name('client-portal.')->group(function () {
   // Guest routes
   Route::middleware('guest:client')->group(function () {
-    Route::get('login', [\App\Http\Controllers\Client\ClientAuthController::class, 'showLogin'])->name('login');
-    Route::post('login', [\App\Http\Controllers\Client\ClientAuthController::class, 'sendLoginLink'])->name('login.send-link');
-    Route::get('login/{token}', [\App\Http\Controllers\Client\ClientAuthController::class, 'login'])->name('login.token');
+    Route::get('login', [\App\Http\Controllers\Client\Portal\ClientAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [\App\Http\Controllers\Client\Portal\ClientAuthController::class, 'sendLoginLink'])->name('login.send-link');
+    Route::get('login/{token}', [\App\Http\Controllers\Client\Portal\ClientAuthController::class, 'login'])->name('login.token');
   });
 
   // Authenticated routes
   Route::middleware('auth:client')->group(function () {
-    Route::get('dashboard', [\App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard');
-    Route::post('logout', [\App\Http\Controllers\Client\ClientAuthController::class, 'logout'])->name('logout');
+    Route::get('dashboard', [\App\Http\Controllers\Client\Portal\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('logout', [\App\Http\Controllers\Client\Portal\ClientAuthController::class, 'logout'])->name('logout');
 
     // Profile routes
-    Route::get('profile', [\App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [\App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('profile', [\App\Http\Controllers\Client\Portal\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [\App\Http\Controllers\Client\Portal\ProfileController::class, 'update'])->name('profile.update');
 
     // Invoice routes
-    Route::get('invoices', [\App\Http\Controllers\Client\InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('invoices/{invoice}', [\App\Http\Controllers\Client\InvoiceController::class, 'show'])->name('invoices.show');
-    Route::get('invoices/{invoice}/download', [\App\Http\Controllers\Client\InvoiceController::class, 'download'])->name('invoices.download');
+    Route::get('invoices', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('invoices/{invoice}/download', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'download'])->name('invoices.download');
 
     // Payment routes
-    Route::get('payments', [\App\Http\Controllers\Client\PaymentController::class, 'index'])->name('payments.index');
-    Route::get('payments/create', [\App\Http\Controllers\Client\PaymentController::class, 'create'])->name('payments.create');
-    Route::post('payments', [\App\Http\Controllers\Client\PaymentController::class, 'store'])->name('payments.store');
-    Route::get('payments/callback', [\App\Http\Controllers\Client\PaymentController::class, 'callback'])->name('payments.callback');
-    Route::get('payments/complete', [\App\Http\Controllers\Client\PaymentController::class, 'complete'])->name('payments.complete');
+    Route::get('payments', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments/create', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'create'])->name('payments.create');
+    Route::post('payments', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'store'])->name('payments.store');
+    Route::get('payments/callback', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'callback'])->name('payments.callback');
+    Route::get('payments/complete', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'complete'])->name('payments.complete');
 
     // Support request routes
-    Route::resource('support-requests', \App\Http\Controllers\Client\SupportRequestController::class);
+    Route::resource('support-requests', \App\Http\Controllers\Client\Portal\SupportRequestController::class);
 
     // Statements
-    Route::get('statements', [\App\Http\Controllers\Client\StatementController::class, 'index'])->name('statements.index');
-    Route::get('statements/download', [\App\Http\Controllers\Client\StatementController::class, 'download'])->name('statements.download');
+    Route::get('statements', [\App\Http\Controllers\Client\Portal\StatementController::class, 'index'])->name('statements.index');
+    Route::get('statements/download', [\App\Http\Controllers\Client\Portal\StatementController::class, 'download'])->name('statements.download');
   });
 });
