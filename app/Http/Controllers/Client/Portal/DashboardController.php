@@ -11,7 +11,7 @@ class DashboardController extends Controller
   {
     $client = auth()->guard('client')->user();
 
-    return Inertia::render('ClientPortal/Dashboard', [
+    return Inertia::render('Portal/Dashboard', [
       'client' => $client,
       'recentInvoices' => $client->invoices()->latest()->take(5)->get(),
       'recentPayments' => $client->payments()->latest()->take(5)->get(),

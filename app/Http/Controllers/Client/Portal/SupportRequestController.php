@@ -16,14 +16,14 @@ class SupportRequestController extends Controller
       ->latest()
       ->paginate(10);
 
-    return Inertia::render('ClientPortal/Support/Index', [
+    return Inertia::render('Portal/Support/Index', [
       'requests' => $requests
     ]);
   }
 
   public function create()
   {
-    return Inertia::render('ClientPortal/Support/Create');
+    return Inertia::render('Portal/Support/Create');
   }
 
   public function store(Request $request)
@@ -47,7 +47,7 @@ class SupportRequestController extends Controller
   {
     $this->authorize('view', $supportRequest);
 
-    return Inertia::render('ClientPortal/Support/Show', [
+    return Inertia::render('Portal/Support/Show', [
       'supportRequest' => $supportRequest
     ]);
   }

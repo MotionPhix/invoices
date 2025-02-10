@@ -22,7 +22,7 @@ class PaymentController extends Controller
       ->paginate(10)
       ->withQueryString();
 
-    return Inertia::render('ClientPortal/Payments/Index', [
+    return Inertia::render('Portal/Payments/Index', [
       'payments' => $payments
     ]);
   }
@@ -69,7 +69,7 @@ class PaymentController extends Controller
       'amount' => $invoice->total
     ]]);
 
-    return Inertia::render('ClientPortal/Payments/Create', [
+    return Inertia::render('Portal/Payments/Create', [
       'invoice' => $invoice,
       'paymentUrl' => $paymentData['payment_url'],
       'reference' => $transactionRef

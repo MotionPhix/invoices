@@ -24,7 +24,7 @@ class StatementController extends Controller
 
     $statement = $this->generateStatement($client, $startDate, $endDate);
 
-    return Inertia::render('ClientPortal/Statements/Index', [
+    return Inertia::render('Portal/Statements/Index', [
       'statement' => $statement,
       'filters' => [
         'start_date' => $startDate->format('Y-m-d'),
