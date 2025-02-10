@@ -34,6 +34,13 @@ Route::middleware([
   'verified',
 ])->group(function () {
 
+
+  Route::post('media', [\App\Http\Controllers\MediaController::class, 'store'])->name('media.store');
+  Route::get('media/{media}', [\App\Http\Controllers\MediaController::class, 'show'])->name('media.show');
+  Route::post('media/validate', [\App\Http\Controllers\MediaController::class, 'validateFile'])->name('media.validate');
+  Route::patch('media/{media}', [\App\Http\Controllers\MediaController::class, 'update'])->name('media.update');
+  Route::delete('media/{media}', [\App\Http\Controllers\MediaController::class, 'destroy'])->name('media.destroy');
+
   Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
   })->name('dashboard');

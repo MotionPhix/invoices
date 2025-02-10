@@ -4,16 +4,18 @@ namespace App\Models;
 
 use App\Notifications\VerifyClientEmail;
 use App\Traits\BootUuid;
+use App\Traits\HasMediaCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
 
-class Client extends Model
+class Client extends Model implements HasMedia
 {
-  use HasFactory, SoftDeletes, LogsActivity, BootUuid;
+  use HasFactory, SoftDeletes, LogsActivity, BootUuid, HasMediaCollection;
 
   protected $fillable = [
     'name',

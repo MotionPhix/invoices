@@ -20,6 +20,7 @@
         "maatwebsite/excel": "^3.1",
         "propaganistas/laravel-phone": "^5.3",
         "spatie/laravel-activitylog": "^4.9",
+        "spatie/laravel-medialibrary": "^11.12",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
