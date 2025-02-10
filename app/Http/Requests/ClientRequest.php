@@ -18,13 +18,11 @@ class ClientRequest extends FormRequest
     $rules = [
       'name' => ['required', 'string', 'max:255'],
       'email' => [
-        'required',
-        'email',
+        'required', 'email',
         Rule::unique('clients')->ignore($this->client),
       ],
       'phone' => [
-        'nullable',
-        'string',
+        'nullable', 'string',
         'phone:MW,ZA,ZM,ZW', // Allow phone numbers from Malawi and neighboring countries
       ],
       'company_name' => ['nullable', 'string', 'max:255'],
@@ -47,6 +45,8 @@ class ClientRequest extends FormRequest
 
       'notes' => ['nullable', 'string'],
       'currency' => ['required', 'string', 'size:3'],
+
+      'user_id' => ['required', 'exists:users,id']
     ];
 
     // Add status validation only for update requests
@@ -84,11 +84,18 @@ class ClientRequest extends FormRequest
 
       'status.required' => 'Please select a status.',
       'status.in' => 'Status must be either active or inactive.',
+
+      'user_id.required' => 'User ID is required.',
+      'user_id.exists' => 'Selected user does not exist.',
     ];
   }
 
   protected function prepareForValidation()
   {
+    $this->merge([
+      'user_id' => auth()->id()
+    ]);
+
     if ($this->use_billing_for_shipping) {
       $this->merge([
         'shipping_address' => $this->billing_address,

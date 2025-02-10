@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\LazyCollection;
 use League\Csv\Reader;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -90,7 +91,6 @@ class ClientImportExportController extends Controller
 
       foreach ($clients as $client) {
         fputcsv($handle, [
-          $client->uuid,
           $client->name,
           $client->email,
           $client->phone,
@@ -160,14 +160,37 @@ class ClientImportExportController extends Controller
         'P.O. Box 1234', // Billing Postal Code
         'Malawi', // Billing Country
         'Yes', // Use Billing for Shipping
-        '123 Sample Street', // Shipping Address
-        'Lilongwe', // Shipping City
-        'Central Region', // Shipping State
-        'P.O. Box 1234', // Shipping Postal Code
-        'Malawi', // Shipping Country
+        '', // Shipping Address (empty because using billing)
+        '', // Shipping City (empty because using billing)
+        '', // Shipping State (empty because using billing)
+        '', // Shipping Postal Code (empty because using billing)
+        '', // Shipping Country (empty because using billing)
         'Sample client notes', // Notes
         'MWK', // Currency
         'active' // Status
+      ]);
+
+      // Add another sample with different shipping address
+      fputcsv($handle, [
+        'Jane Smith',
+        'jane@example.com',
+        '+265999123456',
+        'Another Company Ltd',
+        'VAT789012',
+        '456 Billing Road', // Billing Address
+        'Blantyre', // Billing City
+        'Southern Region', // Billing State
+        'P.O. Box 5678', // Billing Postal Code
+        'Malawi', // Billing Country
+        'No', // Use Billing for Shipping
+        '789 Shipping Street', // Different Shipping Address
+        'Zomba', // Different Shipping City
+        'Southern Region', // Different Shipping State
+        'P.O. Box 9012', // Different Shipping Postal Code
+        'Malawi', // Shipping Country
+        'Client with different shipping address',
+        'MWK',
+        'active'
       ]);
 
       fclose($handle);
@@ -186,63 +209,119 @@ class ClientImportExportController extends Controller
     $csv = Reader::createFromPath($file->getPathname());
     $csv->setHeaderOffset(0);
 
-    $records = $csv->getRecords();
-    $importedCount = 0;
+    $records = LazyCollection::make(function () use ($csv) {
+      foreach ($csv->getRecords() as $offset => $record) {
+        yield $offset => $record;
+      }
+    });
+
+    $batchSize = 100; // Process 100 records at a time
+    $totalProcessed = 0;
     $errors = [];
+    $successCount = 0;
 
-    foreach ($records as $offset => $record) {
-      $validator = Validator::make($record, [
-        'Name' => 'required|string|max:255',
-        'Email' => 'required|email|unique:clients,email',
-        'Phone' => 'nullable|string|max:20',
-        'Company Name' => 'nullable|string|max:255',
-        'VAT Number' => 'nullable|string|max:50',
-        'Currency' => 'required|string|size:3',
-        'Status' => 'required|in:active,inactive',
-      ]);
+    $records->chunk($batchSize)->each(function ($chunk) use (&$totalProcessed, &$errors, &$successCount) {
+      foreach ($chunk as $offset => $record) {
+        $totalProcessed++;
 
-      if ($validator->fails()) {
-        $errors[] = [
-          'row' => $offset + 2,
-          'errors' => $validator->errors()->all()
-        ];
-        continue;
-      }
-
-      try {
-        Client::create([
-          'name' => $record['Name'],
-          'email' => $record['Email'],
-          'phone' => $record['Phone'] ?? null,
-          'company_name' => $record['Company Name'] ?? null,
-          'vat_number' => $record['VAT Number'] ?? null,
-          'billing_address' => $record['Billing Address'] ?? null,
-          'billing_city' => $record['Billing City'] ?? null,
-          'billing_state' => $record['Billing State'] ?? null,
-          'billing_postal_code' => $record['Billing Postal Code'] ?? null,
-          'billing_country' => $record['Billing Country'] ?? null,
-          'use_billing_for_shipping' => ($record['Use Billing for Shipping'] ?? 'Yes') === 'Yes',
-          'shipping_address' => $record['Shipping Address'] ?? null,
-          'shipping_city' => $record['Shipping City'] ?? null,
-          'shipping_state' => $record['Shipping State'] ?? null,
-          'shipping_postal_code' => $record['Shipping Postal Code'] ?? null,
-          'shipping_country' => $record['Shipping Country'] ?? null,
-          'notes' => $record['Notes'] ?? null,
-          'currency' => $record['Currency'] ?? 'MWK',
-          'status' => $record['Status'] ?? 'active',
-          'user_id' => auth()->id()
+        $validator = Validator::make($record, [
+          'Name' => 'required|string|max:255',
+          'Email' => 'required|email|unique:clients,email',
+          'Phone' => 'nullable|string|max:20',
+          'Company Name' => 'nullable|string|max:255',
+          'VAT Number' => 'nullable|string|max:50',
+          'Currency' => 'required|string|size:3',
+          'Status' => 'required|in:active,inactive',
+          'Billing Address' => 'required|string',
+          'Billing City' => 'required|string',
+          'Billing State' => 'required|string',
+          'Billing Country' => 'required|string',
+          'Use Billing for Shipping' => 'required|in:Yes,No',
         ]);
-        $importedCount++;
-      } catch (\Exception $e) {
-        $errors[] = [
-          'row' => $offset + 2,
-          'errors' => [$e->getMessage()]
-        ];
+
+        if ($validator->fails()) {
+          $errors[] = [
+            'row' => $offset + 2,
+            'errors' => $validator->errors()->all()
+          ];
+          continue;
+        }
+
+        try {
+          $useBillingForShipping = $record['Use Billing for Shipping'] === 'Yes';
+
+          // Validate shipping address fields if not using billing address
+          if (!$useBillingForShipping) {
+            $shippingValidator = Validator::make($record, [
+              'Shipping Address' => 'required|string',
+              'Shipping City' => 'required|string',
+              'Shipping State' => 'required|string',
+              'Shipping Country' => 'required|string',
+            ]);
+
+            if ($shippingValidator->fails()) {
+              $errors[] = [
+                'row' => $offset + 2,
+                'errors' => $shippingValidator->errors()->all()
+              ];
+              continue;
+            }
+          }
+
+          // Prepare client data
+          $clientData = [
+            'name' => $record['Name'],
+            'email' => $record['Email'],
+            'phone' => $record['Phone'] ?? null,
+            'company_name' => $record['Company Name'] ?? null,
+            'vat_number' => $record['VAT Number'] ?? null,
+            'billing_address' => $record['Billing Address'],
+            'billing_city' => $record['Billing City'],
+            'billing_state' => $record['Billing State'],
+            'billing_postal_code' => $record['Billing Postal Code'] ?? null,
+            'billing_country' => $record['Billing Country'],
+            'use_billing_for_shipping' => $useBillingForShipping,
+            'notes' => $record['Notes'] ?? null,
+            'currency' => $record['Currency'] ?? 'MWK',
+            'status' => $record['Status'] ?? 'active',
+            'user_id' => auth()->id()
+          ];
+
+          // Set shipping address based on use_billing_for_shipping
+          if ($useBillingForShipping) {
+            $clientData += [
+              'shipping_address' => $record['Billing Address'],
+              'shipping_city' => $record['Billing City'],
+              'shipping_state' => $record['Billing State'],
+              'shipping_postal_code' => $record['Billing Postal Code'] ?? null,
+              'shipping_country' => $record['Billing Country'],
+            ];
+          } else {
+            $clientData += [
+              'shipping_address' => $record['Shipping Address'],
+              'shipping_city' => $record['Shipping City'],
+              'shipping_state' => $record['Shipping State'],
+              'shipping_postal_code' => $record['Shipping Postal Code'] ?? null,
+              'shipping_country' => $record['Shipping Country'],
+            ];
+          }
+
+          Client::create($clientData);
+          $successCount++;
+        } catch (\Exception $e) {
+          $errors[] = [
+            'row' => $offset + 2,
+            'errors' => [$e->getMessage()]
+          ];
+        }
       }
-    }
+    });
 
     return response()->json([
-      'message' => "Imported {$importedCount} clients successfully",
+      'message' => "Imported {$successCount} clients successfully",
+      'total_processed' => $totalProcessed,
+      'success_count' => $successCount,
+      'error_count' => count($errors),
       'errors' => $errors
     ]);
   }

@@ -87,20 +87,7 @@ class ClientController extends Controller
 
   public function store(ClientRequest $request)
   {
-    $validated = $request->validate([
-      'name' => 'required|string|max:255',
-      'email' => 'required|email|unique:clients,email',
-      'phone' => 'nullable|string|max:20',
-      'company_name' => 'nullable|string|max:255',
-      'vat_number' => 'nullable|string|max:50',
-      'billing_address' => 'nullable|string',
-      'shipping_address' => 'nullable|string',
-      'country' => 'nullable|string|max:100',
-      'city' => 'nullable|string|max:100',
-      'postal_code' => 'nullable|string|max:20',
-      'notes' => 'nullable|string',
-      'currency' => 'nullable|string|size:3',
-    ]);
+    $validated = $request->validated();
 
     Client::create($validated);
 
