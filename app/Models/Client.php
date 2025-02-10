@@ -55,6 +55,10 @@ class Client extends Model
     'login_token_expires_at' => 'datetime',
   ];
 
+  protected $hidden = [
+    'login_token',
+  ];
+
   public function invoices()
   {
     return $this->hasMany(Invoice::class);
