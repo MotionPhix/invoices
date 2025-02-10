@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {Head, Link, router} from '@inertiajs/vue3'
-import {useBreakpoints} from '@vueuse/core'
+import {Head, router} from '@inertiajs/vue3'
 import {
   Table,
   TableBody,
@@ -21,7 +20,6 @@ import {
   IconMail,
   IconPhone,
   IconBuilding,
-  IconUsers
 } from '@tabler/icons-vue'
 import EmptyState from '@/Components/EmptyState.vue'
 import MainLayout from "@/Layouts/MainLayout.vue";
@@ -30,9 +28,10 @@ import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
 import Statistics from "@/Pages/Clients/Components/Statistics.vue";
 import ImportExport from "@/Pages/Clients/Components/ImportExport.vue";
 import {Checkbox} from "@/Components/ui/checkbox";
-import {ref} from "vue";
 import BulkActions from "@/Pages/Clients/Components/BulkActions.vue";
 import VerificationStatus from "@/Pages/Clients/Components/VerificationStatus.vue";
+import {toast} from "vue-sonner";
+import {ref} from "vue";
 
 const props = defineProps({
   clients: Object,
@@ -65,6 +64,28 @@ const selectAll = () => {
     selectedClients.value = []
   } else {
     selectedClients.value = props.clients.data.map(client => client.id)
+  }
+}
+
+const isRecentlySent = (sentAt) => {
+  if (!sentAt) return false
+  const cooldownPeriod = 5 * 60 * 1000 // 5 minutes
+  return (new Date() - new Date(sentAt)) < cooldownPeriod
+}
+
+const resendVerification = async (client) => {
+  try {
+    await router.post(route('client.verification.resend', client.id))
+    toast({
+      title: 'Success',
+      description: 'Verification email has been sent',
+    })
+  } catch (error) {
+    toast({
+      title: 'Error',
+      description: 'Failed to send verification email',
+      variant: 'destructive',
+    })
   }
 }
 </script>
