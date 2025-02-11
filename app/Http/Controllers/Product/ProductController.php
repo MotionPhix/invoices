@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Product;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\Category;
@@ -61,9 +62,18 @@ class ProductController extends Controller
         ->get(),
     ];
 
-    return Inertia::render('Products/Index', [
+    $filters = [
+      'search' => $request->input('search', ''),
+      'category' => $request->input('category', ''),
+      'type' => $request->input('type', ''),
+      'status' => $request->input('status', ''),
+      'stock' => $request->input('stock', ''),
+      'sort' => $request->input('sort', 'created_at,desc'),
+    ];
+
+    return Inertia::render('Product/Index', [
       'products' => $query->paginate(10)->withQueryString(),
-      'filters' => $request->only(['search', 'category', 'type', 'status', 'stock', 'sort']),
+      'filters' => $filters,
       'statistics' => $statistics,
       'categories' => Category::all(),
       'sortOptions' => [
@@ -81,7 +91,7 @@ class ProductController extends Controller
 
   public function create()
   {
-    return Inertia::render('Products/Create', [
+    return Inertia::render('Product/Create', [
       'categories' => Category::all(),
       'units' => [
         'product' => ['piece', 'box', 'kg', 'meter', 'liter'],
@@ -121,7 +131,7 @@ class ProductController extends Controller
 
   public function edit(Product $product)
   {
-    return Inertia::render('Products/Edit', [
+    return Inertia::render('Product/Edit', [
       'product' => $product->load(['category', 'prices', 'media']),
       'categories' => Category::all(),
       'units' => [

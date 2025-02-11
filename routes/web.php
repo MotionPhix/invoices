@@ -34,6 +34,21 @@ Route::middleware([
   'verified',
 ])->group(function () {
 
+  // Product & Category Management Routes
+  Route::prefix('catalog')->group(function () {
+    // Products
+    Route::get('products/trashed', [\App\Http\Controllers\Product\ProductController::class, 'trashed'])->name('products.trashed');
+    Route::put('products/{id}/restore', [\App\Http\Controllers\Product\ProductController::class, 'restore'])->name('products.restore');
+    Route::delete('products/{id}/force-delete', [\App\Http\Controllers\Product\ProductController::class, 'forceDelete'])->name('products.force-delete');
+    Route::post('products/bulk-action', [\App\Http\Controllers\Product\ProductController::class, 'bulkAction'])->name('products.bulk-action');
+    Route::resource('products', \App\Http\Controllers\Product\ProductController::class);
+
+    // Categories
+    Route::get('categories/trashed', [\App\Http\Controllers\Category\CategoryController::class, 'trashed'])->name('categories.trashed');
+    Route::put('categories/{id}/restore', [\App\Http\Controllers\Category\CategoryController::class, 'restore'])->name('categories.restore');
+    Route::delete('categories/{id}/force-delete', [\App\Http\Controllers\Category\CategoryController::class, 'forceDelete'])->name('categories.force-delete');
+    Route::resource('categories', \App\Http\Controllers\Category\CategoryController::class);
+  });
 
   Route::post('media', [\App\Http\Controllers\MediaController::class, 'store'])->name('media.store');
   Route::get('media/{media}', [\App\Http\Controllers\MediaController::class, 'show'])->name('media.show');

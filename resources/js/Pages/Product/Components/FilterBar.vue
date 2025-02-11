@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3'
 import { debounce } from 'lodash'
 import { Input } from '@/Components/ui/input'
@@ -11,9 +11,23 @@ import {
 } from '@/Components/ui/select'
 
 const props = defineProps({
-  filters: Object,
-  categories: Array,
-  sortOptions: Array,
+  filters: {
+    type: Object,
+    default: () => ({
+      search: '',
+      category: '',
+      type: '',
+      sort: '',
+    }),
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  sortOptions: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const updateFilter = debounce((key, value) => {
@@ -38,33 +52,31 @@ const updateFilter = debounce((key, value) => {
       </div>
 
       <Select
-        :value="filters.category"
-        @update:value="value => updateFilter('category', value)"
-      >
+        :value="filters.category || 'all'"
+        @update:model-value="value => updateFilter('category', value)">
         <SelectTrigger class="w-[180px]">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
+
         <SelectContent>
-          <SelectItem value="">All Categories</SelectItem>
+          <SelectItem value="all">All Categories</SelectItem>
           <SelectItem
             v-for="category in categories"
             :key="category.id"
-            :value="category.id"
-          >
+            :value="category.id.toString()">
             {{ category.name }}
           </SelectItem>
         </SelectContent>
       </Select>
 
       <Select
-        :value="filters.type"
-        @update:value="value => updateFilter('type', value)"
-      >
+        :value="filters.type || 'all'"
+        @update:model-value="value => updateFilter('type', value)">
         <SelectTrigger class="w-[180px]">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Types</SelectItem>
+          <SelectItem value="all">All Types</SelectItem>
           <SelectItem value="product">Products</SelectItem>
           <SelectItem value="service">Services</SelectItem>
         </SelectContent>
@@ -72,8 +84,8 @@ const updateFilter = debounce((key, value) => {
     </div>
 
     <Select
-      :value="filters.sort"
-      @update:value="value => updateFilter('sort', value)"
+      :value="filters.sort || 'created_at,desc'"
+      @update:model-value="value => updateFilter('sort', value)"
     >
       <SelectTrigger class="w-[180px]">
         <SelectValue placeholder="Sort by" />

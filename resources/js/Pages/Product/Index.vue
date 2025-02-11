@@ -29,11 +29,42 @@ import Statistics from './Components/Statistics.vue'
 import DeleteDialog from './Components/DeleteDialog.vue'
 
 const props = defineProps({
-  products: Object,
-  filters: Object,
-  statistics: Object,
-  categories: Array,
-  sortOptions: Array,
+  products: {
+    type: Object,
+    required: true,
+  },
+  filters: {
+    type: Object,
+    default: () => ({
+      search: '',
+      category: '',
+      type: '',
+      status: '',
+      stock: '',
+      sort: '',
+    }),
+  },
+  statistics: {
+    type: Object,
+    required: true,
+  },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
+  sortOptions: {
+    type: Array,
+    default: () => [
+      { value: 'name,asc', label: 'Name (A-Z)' },
+      { value: 'name,desc', label: 'Name (Z-A)' },
+      { value: 'created_at,desc', label: 'Newest First' },
+      { value: 'created_at,asc', label: 'Oldest First' },
+      { value: 'price,asc', label: 'Price (Low to High)' },
+      { value: 'price,desc', label: 'Price (High to Low)' },
+      { value: 'stock,asc', label: 'Stock (Low to High)' },
+      { value: 'stock,desc', label: 'Stock (High to Low)' },
+    ],
+  },
 })
 
 const showDeleteDialog = ref(false)

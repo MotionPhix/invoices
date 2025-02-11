@@ -69,13 +69,13 @@ const navigation = [
     name: 'Invoices',
     href: route('invoices.index'),
     active: route().current('invoices.*'),
-  },
+  },*/
   {
     name: 'Products & Services',
     href: route('products.index'),
     active: route().current('products.*'),
   },
-  {
+  /*{
     name: 'Reports',
     href: route('reports.index'),
     active: route().current('reports.*'),
