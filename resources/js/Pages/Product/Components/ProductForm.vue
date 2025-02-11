@@ -15,6 +15,7 @@ import { Switch } from '@/Components/ui/switch'
 import { useFileUpload } from '@/Composables/useFileUpload'
 import ImageUpload from '@/Components/ImageUpload.vue'
 import {onBeforeUnmount} from "vue";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps<{
   form: Object,
@@ -233,7 +234,7 @@ onBeforeUnmount(cleanup)
       <Button
         type="button"
         variant="outline"
-        :href="route('products.index')">
+        @click="router.visit(route('products.index'), {replace: true})">
         Cancel
       </Button>
 
