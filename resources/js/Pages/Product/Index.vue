@@ -205,25 +205,24 @@ const getProductIcon = (type) => {
                   :class="{
                     'bg-success/15 text-success': product.is_active,
                     'bg-destructive/15 text-destructive': !product.is_active
-                  }"
-                >
+                  }">
                   {{ product.is_active ? 'Active' : 'Inactive' }}
                 </span>
               </TableCell>
+
               <TableCell>
                 <div class="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    :href="route('products.edit', product.id)"
-                  >
+                    @click="router.visit(route('products.edit', product.id), { replace: true, preserveScroll: true })">
                     <IconPencil class="h-4 w-4"/>
                   </Button>
+
                   <Button
                     variant="ghost"
                     size="icon"
-                    @click="confirmDelete(product)"
-                  >
+                    @click="confirmDelete(product)">
                     <IconTrash class="h-4 w-4"/>
                   </Button>
                 </div>

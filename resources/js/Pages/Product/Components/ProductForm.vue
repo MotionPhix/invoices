@@ -119,8 +119,7 @@ onBeforeUnmount(cleanup)
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
-                  :value="category.id.toString()"
-                >
+                  :value="category.id.toString()">
                   {{ category.name }}
                 </SelectItem>
               </SelectContent>
@@ -234,14 +233,13 @@ onBeforeUnmount(cleanup)
       <Button
         type="button"
         variant="outline"
-        :href="route('products.index')"
-      >
+        :href="route('products.index')">
         Cancel
       </Button>
+
       <Button
         type="submit"
-        :disabled="form.processing"
-      >
+        :disabled="form.processing" >
         {{ product ? 'Update Product' : 'Create Product' }}
       </Button>
     </div>

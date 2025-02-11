@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-vue-next';
 import {
@@ -7,16 +7,16 @@ import {
   SelectItemText,
   useForwardProps,
 } from 'radix-vue';
-import { computed } from 'vue';
+import {type Component, computed} from 'vue';
 
-const props = defineProps({
-  value: { type: String, required: true },
-  disabled: { type: Boolean, required: false },
-  textValue: { type: String, required: false },
-  asChild: { type: Boolean, required: false },
-  as: { type: null, required: false },
-  class: { type: null, required: false },
-});
+const props = defineProps<{
+  value?: string | number
+  disabled?: boolean
+  textValue?: string
+  asChild?: boolean
+  as?: HTMLElement | Component
+  class?: string
+}>();
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
