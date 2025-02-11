@@ -104,8 +104,7 @@ const getProductIcon = (type) => {
 
         <Button
           :href="route('products.create')"
-          class="shrink-0"
-        >
+          class="shrink-0">
           <IconPlus class="h-4 w-4 mr-2"/>
           Add Product
         </Button>
