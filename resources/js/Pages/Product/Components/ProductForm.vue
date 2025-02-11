@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Card } from '@/Components/ui/card'
 import { Input } from '@/Components/ui/input'
 import { Label } from '@/Components/ui/label'
@@ -14,17 +14,18 @@ import {
 import { Switch } from '@/Components/ui/switch'
 import { useFileUpload } from '@/Composables/useFileUpload'
 import ImageUpload from '@/Components/ImageUpload.vue'
+import {onBeforeUnmount} from "vue";
 
-const props = defineProps({
+const props = defineProps<{
   form: Object,
   product: Object,
   categories: Array,
   units: Object,
-})
+}>()
 
 const emit = defineEmits(['submit'])
 
-const { preview, handleFileChange, clearFile } = useFileUpload(props.form, 'image')
+const { preview, handleFileChange, clearFile, cleanup } = useFileUpload(props.form, 'image')
 
 const handleTypeChange = (type) => {
   props.form.type = type
@@ -36,6 +37,8 @@ const handleTypeChange = (type) => {
     props.form.low_stock_threshold = null
   }
 }
+
+onBeforeUnmount(cleanup)
 </script>
 
 <template>
@@ -89,9 +92,8 @@ const handleTypeChange = (type) => {
           <div>
             <Label for="type">Type</Label>
             <Select
-              :value="form.type"
-              @update:value="handleTypeChange"
-            >
+              v-model="form.type"
+              @update:value="handleTypeChange">
               <SelectTrigger :error="form.errors.type">
                 <SelectValue />
               </SelectTrigger>
@@ -106,8 +108,7 @@ const handleTypeChange = (type) => {
             <Label for="category">Category</Label>
             <Select
               v-model="form.category_id"
-              :error="form.errors.category_id"
-            >
+              :error="form.errors.category_id">
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -164,11 +165,11 @@ const handleTypeChange = (type) => {
             <Label for="unit">Unit</Label>
             <Select
               v-model="form.unit"
-              :error="form.errors.unit"
-            >
+              :error="form.errors.unit">
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem
                   v-for="unit in units[form.type]"

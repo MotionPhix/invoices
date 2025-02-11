@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import {Head, Link, router} from '@inertiajs/vue3'
 import { ref } from 'vue'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import {
@@ -103,7 +103,7 @@ const getProductIcon = (type) => {
         </div>
 
         <Button
-          :href="route('products.create')"
+          @click="router.get(route('products.create'), {}, {replace: true})"
           class="shrink-0">
           <IconPlus class="h-4 w-4 mr-2"/>
           Add Product
