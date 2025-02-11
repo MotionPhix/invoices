@@ -1,85 +1,141 @@
-<script setup>
-import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
-import { Button } from '@/Components/ui/button'
-import { Input } from '@/Components/ui/input'
-import { Textarea } from '@/Components/ui/textarea'
-import { useToast } from '@/Components/ui/toast/use-toast'
-import { IconUpload, IconX, IconFile, IconDownload, IconTrash } from '@tabler/icons-vue'
+<script setup lang="ts">
+import {ref} from 'vue'
+import {router} from '@inertiajs/vue3'
+import {Button} from '@/Components/ui/button'
+import {Input} from '@/Components/ui/input'
+import {Textarea} from '@/Components/ui/textarea'
+import {useToast} from '@/Components/ui/toast/use-toast'
+import {IconUpload, IconX, IconFile, IconDownload, IconTrash, IconEye } from '@tabler/icons-vue'
 
-const props = defineProps({
-  modelType: {
-    type: String,
-    required: true,
-    validator: (value) => ['invoice', 'client', 'support_request'].includes(value)
-  },
-  modelId: {
-    type: String,
-    required: true
-  },
-  existingMedia: {
-    type: Array,
-    default: () => []
+const props = withDefaults(
+  defineProps<{
+    modelType: 'invoice' | 'client' | 'support_request'
+    modelId: string
+    existingMedia: Array<any>
+    maxFiles: number
+  }>(),
+  {
+    existingMedia: () => [],
+    maxFiles: 10
   }
-})
+)
 
 const emit = defineEmits(['uploaded', 'deleted'])
-const { toast } = useToast()
+const {toast} = useToast()
 const fileInput = ref(null)
 const dragging = ref(false)
 const uploading = ref(false)
 const description = ref('')
-const selectedFile = ref(null)
+const selectedFiles = ref([])
+const uploadProgress = ref({})
+const previewUrls = ref({})
 
 const handleDrop = (e) => {
   e.preventDefault()
   dragging.value = false
-  const file = e.dataTransfer.files[0]
-  if (file) {
-    selectedFile.value = file
-  }
+  const files = Array.from(e.dataTransfer.files)
+  addFiles(files)
 }
 
 const handleFileSelect = (e) => {
-  const file = e.target.files[0]
-  if (file) {
-    selectedFile.value = file
-  }
+  const files = Array.from(e.target.files)
+  addFiles(files)
 }
 
-const uploadFile = async () => {
-  if (!selectedFile.value) return
+const addFiles = (files) => {
+  if (selectedFiles.value.length + files.length > props.maxFiles) {
+    toast({
+      title: 'Error',
+      description: `You can only upload up to ${props.maxFiles} files at once`,
+      variant: 'destructive'
+    })
+    return
+  }
+
+  files.forEach(file => {
+    // Generate preview for images
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        previewUrls.value[file.name] = e.target.result
+      }
+      reader.readAsDataURL(file)
+    }
+
+    // Add file to selected files if not already present
+    if (!selectedFiles.value.find(f => f.name === file.name)) {
+      selectedFiles.value.push({
+        file,
+        description: '',
+        status: 'pending'
+      })
+    }
+  })
+}
+
+const removeFile = (fileName) => {
+  selectedFiles.value = selectedFiles.value.filter(f => f.file.name !== fileName)
+  delete previewUrls.value[fileName]
+  delete uploadProgress.value[fileName]
+}
+
+const uploadFiles = async () => {
+  if (!selectedFiles.value.length) return
 
   uploading.value = true
-  const formData = new FormData()
-  formData.append('file', selectedFile.value)
-  formData.append('model_type', props.modelType)
-  formData.append('model_id', props.modelId)
-  formData.append('description', description.value)
+  const totalFiles = selectedFiles.value.length
+  let successCount = 0
 
-  try {
-    await router.post(route('media.store'), formData, {
-      onSuccess: () => {
-        selectedFile.value = null
-        description.value = ''
-        fileInput.value.value = ''
-        emit('uploaded')
-        toast({
-          title: 'Success',
-          description: 'Document uploaded successfully'
-        })
-      },
-      onError: (errors) => {
-        toast({
-          title: 'Error',
-          description: Object.values(errors)[0],
-          variant: 'destructive'
-        })
-      }
-    })
-  } finally {
-    uploading.value = false
+  for (const fileData of selectedFiles.value) {
+    if (fileData.status === 'uploaded') continue
+
+    const formData = new FormData()
+    formData.append('file', fileData.file)
+    formData.append('model_type', props.modelType)
+    formData.append('model_id', props.modelId)
+    formData.append('description', fileData.description)
+
+    try {
+      uploadProgress.value[fileData.file.name] = 0
+
+      await router.post(route('media.store'), formData, {
+        onProgress: (progress) => {
+          uploadProgress.value[fileData.file.name] = progress.percentage
+        },
+        onSuccess: () => {
+          fileData.status = 'uploaded'
+          successCount++
+        },
+        onError: (errors) => {
+          fileData.status = 'error'
+          fileData.error = Object.values(errors)[0]
+        }
+      })
+    } catch (error) {
+      fileData.status = 'error'
+      fileData.error = 'Upload failed'
+    }
   }
+
+  if (successCount === totalFiles) {
+    selectedFiles.value = []
+    uploadProgress.value = {}
+    previewUrls.value = {}
+    fileInput.value.value = ''
+    emit('uploaded')
+    toast({
+      title: 'Success',
+      description: `${successCount} ${successCount === 1 ? 'file' : 'files'} uploaded successfully`
+    })
+  } else if (successCount > 0) {
+    toast({
+      title: 'Partial Success',
+      description: `${successCount} of ${totalFiles} files uploaded successfully`,
+      variant: 'warning'
+    })
+  }
+
+  uploading.value = false
 }
 
 const deleteMedia = async (mediaId) => {
@@ -134,12 +190,13 @@ const formatFileSize = (bytes) => {
             for="file-upload"
             class="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80"
           >
-            <span>Upload a file</span>
+            <span>Upload files</span>
             <input
               ref="fileInput"
               id="file-upload"
               name="file-upload"
               type="file"
+              multiple
               class="sr-only"
               @change="handleFileSelect"
             >
@@ -147,35 +204,65 @@ const formatFileSize = (bytes) => {
           <p class="pl-1">or drag and drop</p>
         </div>
         <p class="text-xs text-muted-foreground mt-2">
-          PDF, Word, Excel, or images up to 10MB
+          Upload up to {{ maxFiles }} files (PDF, Word, Excel, or images up to 10MB each)
         </p>
       </div>
     </div>
 
-    <!-- Selected File -->
-    <div v-if="selectedFile" class="space-y-4">
-      <div class="flex items-center gap-2 p-2 border rounded">
-        <IconFile class="h-5 w-5 text-muted-foreground" />
-        <span class="flex-1 truncate">{{ selectedFile.name }}</span>
-        <span class="text-sm text-muted-foreground">
-          {{ formatFileSize(selectedFile.size) }}
-        </span>
-        <Button
-          variant="ghost"
-          size="icon"
-          @click="selectedFile = null; fileInput.value = ''"
-        >
-          <IconX class="h-4 w-4" />
-        </Button>
-      </div>
+    <!-- Selected Files -->
+    <div v-if="selectedFiles.length" class="space-y-4">
+      <div
+        v-for="fileData in selectedFiles"
+        :key="fileData.file.name"
+        class="space-y-4 p-4 border rounded-lg"
+        :class="{
+          'bg-green-50': fileData.status === 'uploaded',
+          'bg-red-50': fileData.status === 'error'
+        }"
+      >
+        <div class="flex items-center gap-2">
+          <div v-if="previewUrls[fileData.file.name]" class="relative w-16 h-16">
+            <img
+              :src="previewUrls[fileData.file.name]"
+              class="w-full h-full object-cover rounded"
+              alt="Preview"
+            />
+          </div>
+          <div v-else>
+            <IconFile class="h-8 w-8 text-muted-foreground" />
+          </div>
 
-      <div class="space-y-2">
-        <label for="description" class="text-sm font-medium">Description</label>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-medium">{{ fileData.file.name }}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                @click="removeFile(fileData.file.name)"
+              >
+                <IconX class="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div class="text-sm text-muted-foreground">
+              {{ formatFileSize(fileData.file.size) }}
+            </div>
+
+            <div v-if="uploadProgress[fileData.file.name]" class="mt-2">
+              <Progress :value="uploadProgress[fileData.file.name]" />
+            </div>
+
+            <div v-if="fileData.status === 'error'" class="mt-2 text-sm text-red-600">
+              {{ fileData.error }}
+            </div>
+          </div>
+        </div>
+
         <Textarea
-          id="description"
-          v-model="description"
-          rows="3"
-          placeholder="Add a description for this document..."
+          v-model="fileData.description"
+          rows="2"
+          placeholder="Add a description for this file..."
+          :disabled="fileData.status === 'uploaded'"
         />
       </div>
 
@@ -183,9 +270,8 @@ const formatFileSize = (bytes) => {
         <Button
           type="button"
           :disabled="uploading"
-          @click="uploadFile"
-        >
-          {{ uploading ? 'Uploading...' : 'Upload Document' }}
+          @click="uploadFiles" >
+          {{ uploading ? 'Uploading...' : 'Upload All Files' }}
         </Button>
       </div>
     </div>
@@ -193,23 +279,28 @@ const formatFileSize = (bytes) => {
     <!-- Existing Media -->
     <div v-if="existingMedia.length" class="space-y-4">
       <h3 class="font-medium">Attached Documents</h3>
-      <div class="space-y-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div
           v-for="media in existingMedia"
           :key="media.id"
-          class="flex items-center justify-between p-3 border rounded-lg"
-        >
+          class="flex items-center justify-between p-3 border rounded-lg">
           <div class="flex items-center gap-3">
-            <IconFile class="h-5 w-5 text-muted-foreground" />
+            <div v-if="media.preview_url" class="relative w-12 h-12">
+              <img
+                :src="media.preview_url"
+                class="w-full h-full object-cover rounded"
+                alt="Preview"
+              />
+            </div>
+            <div v-else>
+              <IconFile class="h-5 w-5 text-muted-foreground" />
+            </div>
+
             <div>
-              <a
-                :href="media.original_url"
-                target="_blank"
-                class="font-medium hover:underline"
-              >
+              <div class="font-medium truncate max-w-[200px]">
                 {{ media.file_name }}
-              </a>
-              <p v-if="media.custom_properties?.description" class="text-sm text-muted-foreground">
+              </div>
+              <p v-if="media.custom_properties?.description" class="text-sm text-muted-foreground truncate max-w-[200px]">
                 {{ media.custom_properties.description }}
               </p>
             </div>
@@ -217,18 +308,25 @@ const formatFileSize = (bytes) => {
 
           <div class="flex items-center gap-2">
             <Button
+              v-if="media.preview_url"
               variant="ghost"
               size="icon"
-              :href="media.original_url"
-              target="_blank"
-            >
-              <IconDownload class="h-4 w-4" />
+              @click="$emit('preview', media)">
+              <IconEye class="h-4 w-4" />
             </Button>
+
             <Button
               variant="ghost"
               size="icon"
-              @click="deleteMedia(media.id)"
-            >
+              :href="media.original_url"
+              target="_blank">
+              <IconDownload class="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              @click="deleteMedia(media.id)">
               <IconTrash class="h-4 w-4" />
             </Button>
           </div>

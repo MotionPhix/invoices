@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers\Product;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class ProductControllerOld extends Controller
+{
+  public function index(Request $request)
+  {
+    $query = Product::query()
+      ->with('category')
+      ->withCount('prices')
+      ->when($request->search, function ($query, $search) {
+        $query->where(function ($query) use ($search) {
+          $query->where('name', 'like', "%{$search}%")
+            ->orWhere('sku', 'like', "%{$search}%");
+        });
+      })
+      ->when($request->type, function ($query, $type) {
+        $query->where('type', $type);
+      })
+      ->when($request->category, function ($query, $category) {
+        $query->where('category_id', $category);
+      })
+      ->when($request->status, function ($query, $status) {
+        $query->where('is_active', $status === 'active');
+      })
+      ->when(
+        $request->sort,
+        fn ($query, $sort) => $query->orderBy(...explode(',', $sort)),
+        fn ($query) => $query->latest()
+      );
+
+    $products = $query->paginate(10)->withQueryString();
+
+    return Inertia::render('Products/Index', [
+      'products' => $products,
+      'categories' => Category::orderBy('name')->get(),
+      'filters' => $request->only(['search', 'type', 'category', 'status', 'sort']),
+      'stats' => [
+        'total' => Product::count(),
+        'active' => Product::where('is_active', true)->count(),
+        'low_stock' => Product::where('track_inventory', true)
+          ->whereColumn('stock', '<=', 'low_stock_threshold')
+          ->count(),
+      ],
+    ]);
+  }
+
+  public function create()
+  {
+    return Inertia::render('Products/Create', [
+      'categories' => Category::orderBy('name')->get(),
+    ]);
+  }
+
+  public function store(ProductRequest $request)
+  {
+    $product = Product::create($request->validated());
+
+    if ($request->hasFile('media')) {
+      foreach ($request->file('media') as $file) {
+        $product->addMedia($file)->toMediaCollection('images');
+      }
+    }
+
+    return redirect()->route('products.index')
+      ->with('success', 'Product created successfully.');
+  }
+
+  public function edit(Product $product)
+  {
+    $product->load('media');
+
+    return Inertia::render('Products/Edit', [
+      'product' => $product,
+      'categories' => Category::orderBy('name')->get(),
+    ]);
+  }
+
+  public function update(ProductRequest $request, Product $product)
+  {
+    $product->update($request->validated());
+
+    if ($request->hasFile('media')) {
+      foreach ($request->file('media') as $file) {
+        $product->addMedia($file)->toMediaCollection('images');
+      }
+    }
+
+    return redirect()->route('products.index')
+      ->with('success', 'Product updated successfully.');
+  }
+
+  public function destroy(Product $product)
+  {
+    $product->delete();
+
+    return redirect()->route('products.index')
+      ->with('success', 'Product deleted successfully.');
+  }
+}

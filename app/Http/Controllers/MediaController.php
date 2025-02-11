@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MediaUploadRequest;
 use App\Jobs\HandleFailedMediaConversion;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\Client;
 use App\Models\SupportRequest;
+use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaController extends Controller
@@ -23,7 +23,6 @@ class MediaController extends Controller
 
   public function store(MediaUploadRequest $request)
   {
-    // Check if user can create media for this model
     $this->authorize('create', [Media::class, $request->model_type, $request->model_id]);
 
     $file = $request->file('file');
@@ -43,19 +42,24 @@ class MediaController extends Controller
           'upload_ip' => $request->ip(),
         ])
         ->withResponsiveImages()
+        ->withGeneratedConversions([
+          'preview' => function ($image) {
+            return $image->fit(400, 400);
+          },
+          'thumbnail' => function ($image) {
+            return $image->fit(100, 100);
+          }
+        ])
         ->toMediaCollection($request->input('collection_name', 'documents'));
 
+      // For PDFs, generate preview image using Imagick
+      if ($media->mime_type === 'application/pdf') {
+        $this->generatePdfPreview($media);
+      }
+
       return response()->json([
-        'message' => 'Document uploaded successfully. Image conversions will be processed in the background.',
-        'media' => $media->only([
-          'id',
-          'name',
-          'file_name',
-          'mime_type',
-          'size',
-          'custom_properties',
-          'created_at'
-        ])
+        'message' => 'Document uploaded successfully',
+        'media' => $this->formatMediaResponse($media)
       ], 201);
     } catch (\Exception $e) {
       if (isset($media)) {
@@ -63,10 +67,51 @@ class MediaController extends Controller
       }
 
       return response()->json([
-        'message' => 'File uploaded but conversions failed. We\'ll process them again automatically.',
+        'message' => 'File uploaded but processing failed. We\'ll try again automatically.',
         'status' => 'pending'
       ], 202);
     }
+  }
+
+  protected function generatePdfPreview(Media $media)
+  {
+    try {
+      $imagick = new \Imagick();
+      $imagick->readImage($media->getPath() . '[0]'); // Get first page
+      $imagick->setImageFormat('jpg');
+      $imagick->setCompressionQuality(85);
+
+      $previewPath = $media->getPath('preview');
+      $imagick->writeImage($previewPath);
+
+      $media->manipulations = array_merge(
+        $media->manipulations ?? [],
+        ['preview' => ['generated' => true]]
+      );
+      $media->save();
+    } catch (\Exception $e) {
+      Log::error('PDF preview generation failed: ' . $e->getMessage());
+    }
+  }
+
+  protected function formatMediaResponse(Media $media)
+  {
+    return [
+      'id' => $media->id,
+      'name' => $media->name,
+      'file_name' => $media->file_name,
+      'mime_type' => $media->mime_type,
+      'size' => $media->size,
+      'custom_properties' => $media->custom_properties,
+      'created_at' => $media->created_at,
+      'preview_url' => $media->hasGeneratedConversion('preview')
+        ? $media->getUrl('preview')
+        : null,
+      'thumbnail_url' => $media->hasGeneratedConversion('thumbnail')
+        ? $media->getUrl('thumbnail')
+        : null,
+      'original_url' => $media->getUrl()
+    ];
   }
 
   public function show(Media $media)
