@@ -97,6 +97,7 @@ onBeforeUnmount(cleanup)
               <SelectTrigger :error="form.errors.type">
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value="product">Product</SelectItem>
                 <SelectItem value="service">Service</SelectItem>
@@ -112,12 +113,13 @@ onBeforeUnmount(cleanup)
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="">Uncategorized</SelectItem>
+                <SelectItem value="null">Uncategorized</SelectItem>
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
-                  :value="category.id"
+                  :value="category.id.toString()"
                 >
                   {{ category.name }}
                 </SelectItem>
@@ -174,8 +176,7 @@ onBeforeUnmount(cleanup)
                 <SelectItem
                   v-for="unit in units[form.type]"
                   :key="unit"
-                  :value="unit"
-                >
+                  :value="unit">
                   {{ unit }}
                 </SelectItem>
               </SelectContent>
