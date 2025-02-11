@@ -18,7 +18,7 @@ import {onBeforeUnmount} from "vue";
 
 const props = defineProps<{
   form: Object,
-  product: Object,
+  product?: Object,
   categories: Array,
   units: Object,
 }>()

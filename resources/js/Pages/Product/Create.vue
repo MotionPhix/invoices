@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import ProductForm from './Components/ProductForm.vue'
@@ -16,7 +16,7 @@ const form = useForm({
   cost: '',
   type: 'product',
   is_active: true,
-  category_id: '',
+  category_id: null,
   unit: 'piece',
   track_inventory: false,
   stock: 0,
@@ -51,6 +51,6 @@ const handleSubmit = () => {
       :categories="categories"
       :units="units"
       @submit="handleSubmit"
-    />
+     :product="null"/>
   </MainLayout>
 </template>
