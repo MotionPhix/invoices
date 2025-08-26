@@ -15,6 +15,7 @@ import { Switch } from '@/components/ui/switch'
 import { useFileUpload } from '@/composables/useFileUpload'
 import ImageUpload from '@/components/ImageUpload.vue'
 import {onBeforeUnmount} from "vue";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps<{
   form: Object,
@@ -119,8 +120,7 @@ onBeforeUnmount(cleanup)
                 <SelectItem
                   v-for="category in categories"
                   :key="category.id"
-                  :value="category.id.toString()"
-                >
+                  :value="category.id.toString()">
                   {{ category.name }}
                 </SelectItem>
               </SelectContent>
@@ -234,14 +234,13 @@ onBeforeUnmount(cleanup)
       <Button
         type="button"
         variant="outline"
-        :href="route('products.index')"
-      >
+        @click="router.visit(route('products.index'), {replace: true})">
         Cancel
       </Button>
+
       <Button
         type="submit"
-        :disabled="form.processing"
-      >
+        :disabled="form.processing" >
         {{ product ? 'Update Product' : 'Create Product' }}
       </Button>
     </div>
