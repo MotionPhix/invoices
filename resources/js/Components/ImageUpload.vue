@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onBeforeUnmount, ref} from 'vue'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import { IconUpload, IconX, IconPhoto } from '@tabler/icons-vue'
 
 const props = defineProps({

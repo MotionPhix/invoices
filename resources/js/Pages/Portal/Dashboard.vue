@@ -7,8 +7,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 defineProps<{
   client: any

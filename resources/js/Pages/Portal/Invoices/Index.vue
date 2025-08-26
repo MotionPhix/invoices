@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
-import { Button } from '@/Components/ui/button'
-import { Input } from '@/Components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -10,8 +10,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/Components/ui/table'
-import { formatCurrency } from '@/lib/utils'
+} from '@/components/ui/table'
+import { Label } from '@/components/ui/label'
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldInput,
+} from '@/components/ui/number-field'
 
 const props = defineProps<{
   invoices: {
@@ -67,7 +72,16 @@ const getStatusColor = (status: string) => {
               {{ new Date(invoice.date).toLocaleDateString() }}
             </TableCell>
             <TableCell>
-              {{ formatCurrency(invoice.total, invoice.currency) }}
+              <NumberField
+                :model-value="invoice.total"
+                :format-options="{ style: 'currency', currency: invoice.currency || 'USD', minimumFractionDigits: 2 }"
+                readonly
+                class="w-32"
+              >
+                <NumberFieldContent>
+                  <NumberFieldInput />
+                </NumberFieldContent>
+              </NumberField>
             </TableCell>
             <TableCell>
               <span
@@ -113,7 +127,7 @@ const getStatusColor = (status: string) => {
     <!-- Pagination -->
     <div class="mt-4 flex items-center justify-between">
       <div class="text-sm text-gray-500">
-        Showing {{ invoices.data.length }} of {{ invoices.total }} invoices
+        Showing {{ invoices.data.length }} of {{ invoices.data.length }} invoices
       </div>
 
       <div class="flex space-x-2">

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/Components/ui/dialog'
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,8 +21,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/Components/ui/dropdown-menu'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import {
   IconUpload,
   IconDownload,
@@ -36,7 +36,7 @@ import {
   IconFileDownload,
   IconChevronDown
 } from '@tabler/icons-vue'
-import { useToast } from '@/Components/ui/toast/use-toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 interface Props {
   filters: Record<string, any>

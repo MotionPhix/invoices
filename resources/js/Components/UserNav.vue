@@ -9,8 +9,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/Components/ui/dropdown-menu'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import {
   IconUser,
   IconSettings,
@@ -20,7 +20,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage
-} from "@/Components/ui/avatar";
+} from "@/components/ui/avatar";
 
 const page = usePage()
 const user = page.props.auth.user

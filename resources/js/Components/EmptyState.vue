@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Button} from '@/Components/ui/button'
+import {Button} from '@/components/ui/button'
 import {IconPlus} from '@tabler/icons-vue'
 import {type Component} from "vue";
 import {router} from "@inertiajs/vue3"

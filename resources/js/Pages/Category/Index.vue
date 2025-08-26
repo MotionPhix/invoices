@@ -7,8 +7,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import {
   IconPlus,
   IconCategory,

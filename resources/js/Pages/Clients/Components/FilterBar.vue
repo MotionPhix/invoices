@@ -2,8 +2,8 @@
 import {computed, ref, watch} from 'vue'
 import {router} from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
-import {Input} from '@/Components/ui/input'
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/Components/ui/select'
+import {Input} from '@/components/ui/input'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 import {IconSearch, IconFilter, IconX} from '@tabler/icons-vue'
 import {
   Sheet,
@@ -12,8 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/Components/ui/sheet'
-import {Button} from '@/Components/ui/button'
+} from '@/components/ui/sheet'
+import {Button} from '@/components/ui/button'
 
 const props = defineProps({
   filters: {

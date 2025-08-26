@@ -4,7 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import {
   IconPackage,
   IconTools,

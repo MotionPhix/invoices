@@ -7,12 +7,12 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from '@/Components/ui/table'
-import {Button} from '@/Components/ui/button'
+} from '@/components/ui/table'
+import {Button} from '@/components/ui/button'
 import {
   Card,
   CardContent,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import {
   IconPlus,
   IconPencil,
@@ -21,15 +21,15 @@ import {
   IconPhone,
   IconBuilding,
 } from '@tabler/icons-vue'
-import EmptyState from '@/Components/EmptyState.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import MainLayout from "@/Layouts/MainLayout.vue";
-import {emptyStates} from "@/Config/EmptyState"
-import FilterBar from "@/Pages/Clients/Components/FilterBar.vue";
-import Statistics from "@/Pages/Clients/Components/Statistics.vue";
-import ImportExport from "@/Pages/Clients/Components/ImportExport.vue";
-import {Checkbox} from "@/Components/ui/checkbox";
-import BulkActions from "@/Pages/Clients/Components/BulkActions.vue";
-import VerificationStatus from "@/Pages/Clients/Components/VerificationStatus.vue";
+import {emptyStates} from "@/config/EmptyState"
+import FilterBar from "@/pages/clients/components/FilterBar.vue";
+import Statistics from "@/pages/clients/components/Statistics.vue";
+import ImportExport from "@/pages/clients/components/ImportExport.vue";
+import {Checkbox} from "@/components/ui/checkbox";
+import BulkActions from "@/pages/clients/components/BulkActions.vue";
+import VerificationStatus from "@/pages/clients/components/VerificationStatus.vue";
 import {toast} from "vue-sonner";
 import {ref} from "vue";
 

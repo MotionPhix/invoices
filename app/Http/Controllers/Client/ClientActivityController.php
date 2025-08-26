@@ -16,7 +16,7 @@ class ClientActivityController extends Controller
       ->latest()
       ->paginate(10);
 
-    return Inertia::render('Clients/Activity', [
+    return Inertia::render('clients/Activity', [
       'client' => $client,
       'activities' => $activities,
     ]);

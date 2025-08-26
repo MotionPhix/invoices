@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDark, useToggle } from '@vueuse/core'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import { IconSun, IconMoon } from '@tabler/icons-vue'
 
 const isDark = useDark({

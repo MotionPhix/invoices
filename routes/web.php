@@ -66,7 +66,6 @@ Route::middleware([
   Route::get('clients/{client}/activity', [ClientActivityController::class, 'index'])
     ->name('clients.activity');
 
-  // Add this new route
   Route::get(
     'clients/sample',
     [ClientImportExportController::class, 'getSampleFile']
@@ -94,6 +93,17 @@ Route::middleware([
 
 });
 
+// Owner/Staff Invoice Routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+  Route::get('invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('owner.invoices.index');
+  Route::get('invoices/create', [\App\Http\Controllers\InvoiceController::class, 'create'])->name('owner.invoices.create');
+  Route::post('invoices', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('owner.invoices.store');
+  Route::get('invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('owner.invoices.show');
+  Route::get('invoices/{invoice}/edit', [\App\Http\Controllers\InvoiceController::class, 'edit'])->name('owner.invoices.edit');
+  Route::put('invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'update'])->name('owner.invoices.update');
+  Route::delete('invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('owner.invoices.destroy');
+});
+
 // Client Portal Routes
 Route::prefix('client-portal')->name('client-portal.')->group(function () {
   // Guest routes
@@ -113,9 +123,13 @@ Route::prefix('client-portal')->name('client-portal.')->group(function () {
     Route::patch('profile', [\App\Http\Controllers\Client\Portal\ProfileController::class, 'update'])->name('profile.update');
 
     // Invoice routes
-    Route::get('invoices', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('invoices/{invoice}', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'show'])->name('invoices.show');
-    Route::get('invoices/{invoice}/download', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'download'])->name('invoices.download');
+  Route::get('invoices', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'index'])->name('invoices.index');
+  Route::get('invoices/create', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'create'])->name('invoices.create');
+  Route::post('invoices', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'store'])->name('invoices.store');
+  Route::get('invoices/{invoice}/edit', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'edit'])->name('invoices.edit');
+  Route::put('invoices/{invoice}', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'update'])->name('invoices.update');
+  Route::get('invoices/{invoice}', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'show'])->name('invoices.show');
+  Route::get('invoices/{invoice}/download', [\App\Http\Controllers\Client\Portal\InvoiceController::class, 'download'])->name('invoices.download');
 
     // Payment routes
     Route::get('payments', [\App\Http\Controllers\Client\Portal\PaymentController::class, 'index'])->name('payments.index');

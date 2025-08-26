@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
-import { Button } from '@/Components/ui/button'
-import { Input } from '@/Components/ui/input'
-import { Checkbox } from '@/Components/ui/checkbox'
-import { useToast } from '@/Components/ui/toast/use-toast'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useToast } from '@/components/ui/toast/use-toast'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 
 const props = defineProps<{
   client: any

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3'
 import { debounce } from 'lodash'
-import { Input } from '@/Components/ui/input'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/Components/ui/select'
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -16,8 +16,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/Components/ui/table'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
 import { IconPencil, IconTrash } from '@tabler/icons-vue'
 
 const props = defineProps({

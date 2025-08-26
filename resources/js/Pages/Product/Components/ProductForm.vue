@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { Card } from '@/Components/ui/card'
-import { Input } from '@/Components/ui/input'
-import { Label } from '@/Components/ui/label'
-import { Button } from '@/Components/ui/button'
-import { Textarea } from '@/Components/ui/textarea'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/Components/ui/select'
-import { Switch } from '@/Components/ui/switch'
-import { useFileUpload } from '@/Composables/useFileUpload'
-import ImageUpload from '@/Components/ImageUpload.vue'
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { useFileUpload } from '@/composables/useFileUpload'
+import ImageUpload from '@/components/ImageUpload.vue'
 import {onBeforeUnmount} from "vue";
 
 const props = defineProps<{

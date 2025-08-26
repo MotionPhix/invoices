@@ -8,8 +8,8 @@ import {
   usePreferredLanguages
 } from '@vueuse/core'
 import {IconMenu2, IconX} from '@tabler/icons-vue'
-import ThemeToggle from '@/Components/ThemeToggle.vue'
-import {Button} from '@/Components/ui/button'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+import {Button} from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,10 +17,10 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/Components/ui/navigation-menu'
-import UserNav from '@/Components/UserNav.vue'
-import ApplicationMark from "@/Components/ApplicationMark.vue";
-import {Toaster} from "@/Components/ui/toast";
+} from '@/components/ui/navigation-menu'
+import UserNav from '@/components/UserNav.vue'
+import ApplicationMark from "@/components/ApplicationMark.vue";
+import {Toaster} from "@/components/ui/toast";
 
 const props = defineProps({
   title: String,
@@ -65,11 +65,11 @@ const navigation = [
     href: route('clients.index'),
     active: route().current('clients.*'),
   },
-  /*{
+  {
     name: 'Invoices',
     href: route('invoices.index'),
     active: route().current('invoices.*'),
-  },*/
+  },
   {
     name: 'Products & Services',
     href: route('products.index'),

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import {router} from '@inertiajs/vue3'
-import {Button} from '@/Components/ui/button'
-import {Input} from '@/Components/ui/input'
-import {Textarea} from '@/Components/ui/textarea'
-import {useToast} from '@/Components/ui/toast/use-toast'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
+import {useToast} from '@/components/ui/toast/use-toast'
 import {IconUpload, IconX, IconFile, IconDownload, IconTrash, IconEye } from '@tabler/icons-vue'
 
 const props = withDefaults(

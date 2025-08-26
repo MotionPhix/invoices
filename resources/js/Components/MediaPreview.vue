@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { Modal } from '@/Components/ui/modal'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import { IconChevronLeft, IconChevronRight, IconFile } from '@tabler/icons-vue'
 
 const props = defineProps({

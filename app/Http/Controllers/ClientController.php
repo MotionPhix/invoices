@@ -63,7 +63,7 @@ class ClientController extends Controller
         $query->orderBy('created_at', 'desc');
       });
 
-    return Inertia::render('Clients/Index', [
+    return Inertia::render('clients/Index', [
       'clients' => $query->paginate(10)->withQueryString(),
       'filters' => $request->only(['search', 'status', 'sort']),
       'statistics' => $statistics,
@@ -82,7 +82,7 @@ class ClientController extends Controller
 
   public function create()
   {
-    return Inertia::render('Clients/Create');
+    return Inertia::render('clients/Create');
   }
 
   public function store(ClientRequest $request)

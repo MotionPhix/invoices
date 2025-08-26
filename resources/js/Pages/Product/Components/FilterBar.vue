@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3'
 import { debounce } from 'lodash'
-import { Input } from '@/Components/ui/input'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/Components/ui/select'
+} from '@/components/ui/select'
 
 const props = defineProps({
   filters: {

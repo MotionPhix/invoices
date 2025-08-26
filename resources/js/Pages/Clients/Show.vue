@@ -2,14 +2,14 @@
 import { ref } from 'vue'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import {
   Tabs,
   TabsContent,
@@ -32,7 +32,7 @@ import {
   IconTags,
   IconFolder,
 } from '@tabler/icons-vue'
-import { useToast } from '@/Components/ui/toast/use-toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 const props = defineProps({
   client: {

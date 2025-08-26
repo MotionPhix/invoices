@@ -12,7 +12,7 @@ class ClientAuthController extends Controller
 {
   public function showLogin()
   {
-    return inertia('ClientPortal/Auth/Login');
+    return inertia('client-portal/Auth/Login');
   }
 
   public function sendLoginLink(Request $request)

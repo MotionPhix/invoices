@@ -1,5 +1,5 @@
 <script setup>
-import Welcome from '@/Components/Welcome.vue';
+import Welcome from '@/components/Welcome.vue';
 import MainLayout from "@/Layouts/MainLayout.vue";
 </script>
 

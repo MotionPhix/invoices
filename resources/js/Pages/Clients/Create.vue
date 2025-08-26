@@ -1,10 +1,10 @@
 <script setup>
 import { Head, router, useForm } from '@inertiajs/vue3'
-import { Input } from '@/Components/ui/input'
-import { Label } from '@/Components/ui/label'
-import { Button } from '@/Components/ui/button'
-import { Textarea } from '@/Components/ui/textarea'
-import { Checkbox } from '@/Components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import {
   IconUser,
   IconMail,
@@ -25,7 +25,7 @@ import {
 } from '@tabler/icons-vue'
 import MainLayout from "@/Layouts/MainLayout.vue"
 import { watch } from "vue"
-import PhoneInput from "@/Components/PhoneInput.vue";
+import PhoneInput from "@/components/PhoneInput.vue";
 
 const form = useForm({
   name: '',

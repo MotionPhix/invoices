@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -15,8 +15,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/Components/ui/table'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
 import {
   IconPlus,
   IconPencil,

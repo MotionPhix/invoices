@@ -7,8 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/Components/ui/dialog'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps({
   show: Boolean,

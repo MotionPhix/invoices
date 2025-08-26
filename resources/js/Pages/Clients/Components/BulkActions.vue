@@ -9,8 +9,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/Components/ui/dropdown-menu'
-import { Button } from '@/Components/ui/button'
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import {
   IconChevronDown,
   IconTrash,
@@ -18,7 +18,7 @@ import {
   IconX,
   IconUsers
 } from '@tabler/icons-vue'
-import { useToast } from '@/Components/ui/toast/use-toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 interface Props {
   selected: number[]

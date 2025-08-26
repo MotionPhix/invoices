@@ -1,13 +1,13 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
-import { Button } from '@/Components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/Components/ui/card'
+} from '@/components/ui/card'
 import { IconArrowLeft, IconHistory } from '@tabler/icons-vue'
 import TimelineActivity from './Partials/TimelineActivity.vue'
 import MainLayout from "@/Layouts/MainLayout.vue";
